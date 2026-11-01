@@ -1,0 +1,516 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "database-scaling",
+  "title": "Why more servers can slow your database",
+  "accent": "#f5c56b",
+  "style": "editorial",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "nodes": [
+    {
+      "id": "app0",
+      "kind": "server",
+      "label": "APP 1",
+      "x": 220,
+      "y": 650,
+      "opacity": 0
+    },
+    {
+      "id": "app1",
+      "kind": "server",
+      "label": "APP 2",
+      "x": 380,
+      "y": 650,
+      "opacity": 0
+    },
+    {
+      "id": "app2",
+      "kind": "server",
+      "label": "APP 3",
+      "x": 540,
+      "y": 650,
+      "opacity": 1
+    },
+    {
+      "id": "app3",
+      "kind": "server",
+      "label": "APP 4",
+      "x": 700,
+      "y": 650,
+      "opacity": 0
+    },
+    {
+      "id": "app4",
+      "kind": "server",
+      "label": "APP 5",
+      "x": 860,
+      "y": 650,
+      "opacity": 0
+    },
+    {
+      "id": "db",
+      "kind": "database",
+      "label": "POSTGRES",
+      "x": 540,
+      "y": 1080,
+      "load": 0.1
+    },
+    {
+      "id": "pool",
+      "kind": "service",
+      "label": "CONNECTION POOL",
+      "x": 540,
+      "y": 850,
+      "opacity": 0,
+      "color": "#74d8b4"
+    },
+    {
+      "id": "ram",
+      "kind": "storage",
+      "label": "MEMORY",
+      "x": 870,
+      "y": 1070,
+      "opacity": 0,
+      "color": "#ee797b"
+    },
+    {
+      "id": "replica1",
+      "kind": "database",
+      "label": "READ REPLICA",
+      "x": 260,
+      "y": 1130,
+      "opacity": 0,
+      "color": "#74d8b4"
+    },
+    {
+      "id": "replica2",
+      "kind": "database",
+      "label": "READ REPLICA",
+      "x": 820,
+      "y": 1130,
+      "opacity": 0,
+      "color": "#74d8b4"
+    },
+    {
+      "id": "blob",
+      "kind": "storage",
+      "label": "OBJECT STORAGE",
+      "x": 890,
+      "y": 850,
+      "opacity": 0,
+      "color": "#f5c56b"
+    }
+  ],
+  "beats": [
+    {
+      "id": "start",
+      "chapter": "THE START",
+      "headline": "One app. One database.",
+      "subhead": "A simple architecture. Until traffic grows.",
+      "narration": "One app, one database. Everything feels fast. Then traffic grows, and the obvious fix is to add more application servers.",
+      "durationSeconds": 7,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "app2",
+          "to": "db",
+          "packets": 2
+        }
+      ],
+      "metric": {
+        "label": "ARCHITECTURE",
+        "value": "Simple → under pressure"
+      }
+    },
+    {
+      "id": "overload",
+      "chapter": "01 / THE BOTTLENECK",
+      "headline": "More servers. More pressure.",
+      "subhead": "Each connection consumes database resources.",
+      "narration": "But every server opens more connections. The database spends resources managing them, and adding servers can make the bottleneck worse.",
+      "durationSeconds": 7,
+      "nodes": {
+        "app0": {
+          "opacity": 1
+        },
+        "app1": {
+          "opacity": 1
+        },
+        "app2": {
+          "opacity": 1
+        },
+        "app3": {
+          "opacity": 1
+        },
+        "app4": {
+          "opacity": 1
+        },
+        "db": {
+          "load": 0.95,
+          "color": "#ef777b"
+        },
+        "ram": {
+          "opacity": 1,
+          "load": 0.95
+        }
+      },
+      "flows": [
+        {
+          "from": "app0",
+          "to": "db",
+          "packets": 7,
+          "color": "#ef777b",
+          "bend": -24
+        },
+        {
+          "from": "app1",
+          "to": "db",
+          "packets": 7,
+          "color": "#ef777b",
+          "bend": -12
+        },
+        {
+          "from": "app2",
+          "to": "db",
+          "packets": 7,
+          "color": "#ef777b",
+          "bend": 0
+        },
+        {
+          "from": "app3",
+          "to": "db",
+          "packets": 7,
+          "color": "#ef777b",
+          "bend": 12
+        },
+        {
+          "from": "app4",
+          "to": "db",
+          "packets": 7,
+          "color": "#ef777b",
+          "bend": 24
+        }
+      ],
+      "metric": {
+        "label": "CONNECTION PRESSURE",
+        "value": "Too many competing clients"
+      }
+    },
+    {
+      "id": "pool",
+      "chapter": "02 / REUSE CONNECTIONS",
+      "headline": "Put a pool in the middle.",
+      "subhead": "Many clients → a bounded pool → Postgres",
+      "narration": "A connection pool lets many clients reuse a bounded set of database connections. The traffic remains, but connection pressure falls.",
+      "durationSeconds": 7,
+      "nodes": {
+        "pool": {
+          "opacity": 1
+        },
+        "db": {
+          "load": 0.25,
+          "color": "#8d9be8"
+        },
+        "ram": {
+          "opacity": 0
+        }
+      },
+      "flows": [
+        {
+          "from": "app0",
+          "to": "pool",
+          "packets": 4
+        },
+        {
+          "from": "app1",
+          "to": "pool",
+          "packets": 4
+        },
+        {
+          "from": "app2",
+          "to": "pool",
+          "packets": 4
+        },
+        {
+          "from": "app3",
+          "to": "pool",
+          "packets": 4
+        },
+        {
+          "from": "app4",
+          "to": "pool",
+          "packets": 4
+        },
+        {
+          "from": "pool",
+          "to": "db",
+          "packets": 2,
+          "color": "#74d8b4"
+        }
+      ],
+      "metric": {
+        "label": "CONNECTIONS",
+        "value": "Reuse instead of reopen"
+      }
+    },
+    {
+      "id": "replicas",
+      "chapter": "03 / SEPARATE READS",
+      "headline": "Let replicas handle reads.",
+      "subhead": "Primary writes. Replicas serve eligible reads.",
+      "narration": "Next, move suitable reads to replicas. Keep writes on the primary, and remember: replicas may lag behind the latest update.",
+      "durationSeconds": 7,
+      "nodes": {
+        "db": {
+          "label": "PRIMARY",
+          "x": 540,
+          "y": 1140
+        },
+        "replica1": {
+          "opacity": 1
+        },
+        "replica2": {
+          "opacity": 1
+        }
+      },
+      "flows": [
+        {
+          "from": "app0",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app1",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app2",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app3",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app4",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "pool",
+          "to": "db",
+          "packets": 1,
+          "color": "#f5c56b"
+        },
+        {
+          "from": "pool",
+          "to": "replica1",
+          "packets": 4,
+          "color": "#74d8b4"
+        },
+        {
+          "from": "pool",
+          "to": "replica2",
+          "packets": 4,
+          "color": "#74d8b4"
+        }
+      ],
+      "metric": {
+        "label": "READ CAPACITY",
+        "value": "Share the work"
+      }
+    },
+    {
+      "id": "photos",
+      "chapter": "04 / MOVE LARGE FILES",
+      "headline": "Photos live outside the DB.",
+      "subhead": "Store the object. Keep its reference in Postgres.",
+      "narration": "Large photos do not need to live in database rows. Put the files in object storage, and keep their references in Postgres.",
+      "durationSeconds": 7,
+      "nodes": {
+        "blob": {
+          "opacity": 1,
+          "load": 0.35
+        },
+        "app4": {
+          "opacity": 0.3
+        }
+      },
+      "flows": [
+        {
+          "from": "app3",
+          "to": "blob",
+          "packets": 3,
+          "color": "#f5c56b"
+        },
+        {
+          "from": "app2",
+          "to": "pool",
+          "packets": 2
+        },
+        {
+          "from": "pool",
+          "to": "db",
+          "packets": 2
+        }
+      ],
+      "metric": {
+        "label": "DATABASE ROW",
+        "value": "photo_id / object_key"
+      }
+    },
+    {
+      "id": "shards",
+      "chapter": "05 / PARTITION THE DATA",
+      "headline": "Split the growing dataset.",
+      "subhead": "A routing key chooses the correct shard.",
+      "narration": "When one database is still too small, partition the data. A routing key sends each request to the shard that owns it.",
+      "durationSeconds": 7,
+      "nodes": {
+        "blob": {
+          "opacity": 0
+        },
+        "db": {
+          "label": "SHARD B",
+          "color": "#8d9be8"
+        },
+        "replica1": {
+          "label": "SHARD A",
+          "color": "#8d9be8"
+        },
+        "replica2": {
+          "label": "SHARD C",
+          "color": "#8d9be8"
+        },
+        "pool": {
+          "label": "ROUTE BY USER ID",
+          "color": "#f5c56b"
+        },
+        "app4": {
+          "opacity": 1
+        }
+      },
+      "flows": [
+        {
+          "from": "app0",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app1",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app2",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app3",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "app4",
+          "to": "pool",
+          "packets": 3
+        },
+        {
+          "from": "pool",
+          "to": "replica1",
+          "packets": 2,
+          "color": "#f5c56b"
+        },
+        {
+          "from": "pool",
+          "to": "db",
+          "packets": 2,
+          "color": "#f5c56b"
+        },
+        {
+          "from": "pool",
+          "to": "replica2",
+          "packets": 2,
+          "color": "#f5c56b"
+        }
+      ],
+      "metric": {
+        "label": "ROUTING",
+        "value": "user_id → owning shard"
+      }
+    },
+    {
+      "id": "result",
+      "chapter": "THE TAKEAWAY",
+      "headline": "Fix the bottleneck you have.",
+      "subhead": "Connections. Reads. Storage. Data volume.",
+      "narration": "Scaling is a sequence of different problems. Measure the bottleneck, choose the matching fix, and check what becomes the next limit.",
+      "durationSeconds": 7,
+      "nodes": {
+        "db": {
+          "load": 0.15
+        },
+        "replica1": {
+          "load": 0.15
+        },
+        "replica2": {
+          "load": 0.15
+        }
+      },
+      "flows": [
+        {
+          "from": "app0",
+          "to": "pool",
+          "packets": 2
+        },
+        {
+          "from": "app1",
+          "to": "pool",
+          "packets": 2
+        },
+        {
+          "from": "app2",
+          "to": "pool",
+          "packets": 2
+        },
+        {
+          "from": "app3",
+          "to": "pool",
+          "packets": 2
+        },
+        {
+          "from": "app4",
+          "to": "pool",
+          "packets": 2
+        },
+        {
+          "from": "pool",
+          "to": "replica1",
+          "packets": 2,
+          "color": "#74d8b4"
+        },
+        {
+          "from": "pool",
+          "to": "db",
+          "packets": 2,
+          "color": "#74d8b4"
+        },
+        {
+          "from": "pool",
+          "to": "replica2",
+          "packets": 2,
+          "color": "#74d8b4"
+        }
+      ],
+      "metric": {
+        "label": "SYSTEM DESIGN",
+        "value": "Measure → change → verify"
+      }
+    }
+  ]
+}

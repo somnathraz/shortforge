@@ -1,0 +1,606 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "vertical-scaling",
+  "title": "Vertical scaling: more power, one machine",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Distinguish vertical scaling from horizontal scaling and recognize its limits.",
+    "caveat": "CPU, RAM and request counts are illustrative, not benchmarks or universal hardware limits. Benefits depend on the workload; one larger server does not add redundancy.",
+    "claims": [
+      {
+        "claim": "Vertical scaling adds resources to one machine; horizontal scaling adds machines.",
+        "sourceUrl": "https://learn.microsoft.com/en-us/azure/well-architected/scalability/design-scale"
+      },
+      {
+        "claim": "Some instance upgrades require stopping and restarting the instance.",
+        "sourceUrl": "https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/aws-cli/bash-linux/ec2/change-ec2-instance-type/README.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "x": 540,
+      "y": 620,
+      "color": "#b6bef2",
+      "label": "APP TRAFFIC",
+      "labelPlacement": "above",
+      "id": "users",
+      "kind": "sphere"
+    },
+    {
+      "x": 540,
+      "y": 1110,
+      "load": 0.25,
+      "label": "ONE SERVER",
+      "cores": 2,
+      "memoryGb": 8,
+      "memoryUsed": 0.45,
+      "status": "online",
+      "id": "machine",
+      "kind": "compute",
+      "coreSlots": 16,
+      "memorySlots": 8,
+      "memoryUnitGb": 8
+    },
+    {
+      "x": 540,
+      "y": 850,
+      "opacity": 0,
+      "color": "#efc373",
+      "label": "WAITING",
+      "queueDepth": 0,
+      "id": "waiting",
+      "kind": "queue"
+    },
+    {
+      "x": 540,
+      "y": 1110,
+      "opacity": 0,
+      "label": "SERVER 02",
+      "scale": 0.65,
+      "cores": 2,
+      "memoryGb": 8,
+      "id": "extra1",
+      "kind": "compute",
+      "coreSlots": 16,
+      "memorySlots": 8
+    },
+    {
+      "x": 820,
+      "y": 1110,
+      "opacity": 0,
+      "label": "SERVER 03",
+      "scale": 0.65,
+      "cores": 2,
+      "memoryGb": 8,
+      "id": "extra2",
+      "kind": "compute",
+      "coreSlots": 16,
+      "memorySlots": 8
+    }
+  ],
+  "beats": [
+    {
+      "id": "intro",
+      "chapter": "01 / THE IDEA",
+      "headline": "Same server.\nMore muscle.",
+      "subhead": "A larger machine, illustrated from the inside.",
+      "narration": "Your app is slowing down. One option is vertical scaling: give the same server more CPU power and more memory.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "machine",
+          "color": "#efc373",
+          "packets": 3,
+          "speed": 0.35,
+          "bend": 0,
+          "lanes": 2,
+          "spread": 360
+        }
+      ],
+      "cues": [],
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "One machine. More resources."
+      }
+    },
+    {
+      "id": "pressure",
+      "chapter": "02 / THE PRESSURE",
+      "headline": "Traffic grows.\nThe box struggles.",
+      "subhead": "CPU saturation and memory pressure can limit throughput.",
+      "narration": "As traffic grows, the processor gets busy and memory fills up. Requests start waiting. First, measure which resource is actually limiting performance.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "machine",
+          "color": "#efc373",
+          "packets": 3,
+          "speed": 0.35,
+          "bend": 0,
+          "lanes": 2,
+          "spread": 360
+        }
+      ],
+      "cues": [
+        {
+          "onPhrase": "traffic grows",
+          "transitionSeconds": 1.2,
+          "nodes": {},
+          "flows": [
+            {
+              "from": "users",
+              "to": "machine",
+              "color": "#efc373",
+              "packets": 5,
+              "speed": 0.35,
+              "bend": 0,
+              "lanes": 6,
+              "spread": 360
+            }
+          ]
+        },
+        {
+          "onPhrase": "processor gets busy",
+          "transitionSeconds": 0.8,
+          "nodes": {
+            "machine": {
+              "load": 0.95
+            }
+          }
+        },
+        {
+          "onPhrase": "memory fills up",
+          "transitionSeconds": 0.8,
+          "nodes": {
+            "machine": {
+              "memoryUsed": 0.96
+            }
+          }
+        },
+        {
+          "onPhrase": "Requests start waiting",
+          "transitionSeconds": 1.6,
+          "nodes": {
+            "waiting": {
+              "opacity": 1,
+              "queueDepth": 14
+            }
+          },
+          "flows": [
+            {
+              "from": "users",
+              "to": "waiting",
+              "color": "#efc373",
+              "packets": 4,
+              "speed": 0.35,
+              "bend": 0,
+              "lanes": 6,
+              "spread": 360
+            },
+            {
+              "from": "waiting",
+              "to": "machine",
+              "color": "#efc373",
+              "packets": 2,
+              "speed": 0.12,
+              "bend": 0,
+              "lanes": 2,
+              "spread": 260
+            }
+          ]
+        }
+      ],
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Find the bottleneck first."
+      }
+    },
+    {
+      "id": "upgrade",
+      "chapter": "03 / THE UPGRADE",
+      "headline": "Add capacity.\nKeep one server.",
+      "subhead": "For example: 2 → 8 cores and 8 → 32 GB RAM.",
+      "narration": "You could move from two cores and eight gigabytes of memory to eight cores and thirty-two gigabytes. This is scaling up.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "waiting",
+          "color": "#efc373",
+          "packets": 4,
+          "speed": 0.35,
+          "bend": 0,
+          "lanes": 6,
+          "spread": 360
+        },
+        {
+          "from": "waiting",
+          "to": "machine",
+          "color": "#efc373",
+          "packets": 2,
+          "speed": 0.12,
+          "bend": 0,
+          "lanes": 2,
+          "spread": 260
+        }
+      ],
+      "cues": [
+        {
+          "onPhrase": "eight cores",
+          "transitionSeconds": 1.2,
+          "nodes": {
+            "machine": {
+              "cores": 8
+            }
+          }
+        },
+        {
+          "onPhrase": "thirty-two gigabytes",
+          "transitionSeconds": 1.2,
+          "nodes": {
+            "machine": {
+              "memoryGb": 32,
+              "memoryUsed": 0.24
+            }
+          }
+        }
+      ],
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "2 → 8 cores / 8 → 32 GB"
+      }
+    },
+    {
+      "id": "headroom",
+      "chapter": "04 / THE EFFECT",
+      "headline": "Room to work.\nLess waiting.",
+      "subhead": "More hardware helps when the workload can use it.",
+      "narration": "With more capacity, the same traffic may leave more headroom. But a faster machine will not automatically fix slow queries or single-threaded code.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "waiting",
+          "color": "#efc373",
+          "packets": 4,
+          "speed": 0.35,
+          "bend": 0,
+          "lanes": 6,
+          "spread": 360
+        },
+        {
+          "from": "waiting",
+          "to": "machine",
+          "color": "#efc373",
+          "packets": 2,
+          "speed": 0.12,
+          "bend": 0,
+          "lanes": 2,
+          "spread": 260
+        }
+      ],
+      "cues": [
+        {
+          "onPhrase": "With more capacity",
+          "transitionSeconds": 2.4,
+          "nodes": {
+            "machine": {
+              "load": 0.3
+            },
+            "waiting": {
+              "queueDepth": 0
+            }
+          },
+          "flows": [
+            {
+              "from": "users",
+              "to": "waiting",
+              "color": "#efc373",
+              "packets": 4,
+              "speed": 0.35,
+              "bend": 0,
+              "lanes": 6,
+              "spread": 360
+            },
+            {
+              "from": "waiting",
+              "to": "machine",
+              "color": "#74d8b4",
+              "packets": 4,
+              "speed": 0.7,
+              "bend": 0,
+              "lanes": 6,
+              "spread": 260
+            }
+          ]
+        }
+      ],
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Workload matters."
+      }
+    },
+    {
+      "id": "ceiling",
+      "chapter": "05 / THE LIMIT",
+      "headline": "Every machine\nhas a ceiling.",
+      "subhead": "Illustrative configuration; actual hardware limits vary.",
+      "narration": "There is a limit to how large one machine can get. Bigger hardware can cost more, and eventually you reach its ceiling.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "waiting",
+          "color": "#efc373",
+          "packets": 4,
+          "speed": 0.35,
+          "bend": 0,
+          "lanes": 6,
+          "spread": 360
+        },
+        {
+          "from": "waiting",
+          "to": "machine",
+          "color": "#74d8b4",
+          "packets": 4,
+          "speed": 0.7,
+          "bend": 0,
+          "lanes": 6,
+          "spread": 260
+        }
+      ],
+      "cues": [
+        {
+          "onPhrase": "Bigger hardware",
+          "transitionSeconds": 1.8,
+          "nodes": {
+            "machine": {
+              "cores": 16,
+              "memoryGb": 64,
+              "memoryUsed": 0.3
+            }
+          }
+        },
+        {
+          "onPhrase": "reach its ceiling",
+          "transitionSeconds": 0.8,
+          "nodes": {
+            "machine": {
+              "load": 1,
+              "memoryUsed": 0.94
+            },
+            "waiting": {
+              "queueDepth": 20
+            }
+          },
+          "flows": [
+            {
+              "from": "users",
+              "to": "waiting",
+              "color": "#efc373",
+              "packets": 6,
+              "speed": 0.5,
+              "bend": 0,
+              "lanes": 6,
+              "spread": 360
+            },
+            {
+              "from": "waiting",
+              "to": "machine",
+              "color": "#efc373",
+              "packets": 2,
+              "speed": 0.12,
+              "bend": 0,
+              "lanes": 2,
+              "spread": 260
+            }
+          ]
+        }
+      ],
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Finite hardware. Higher cost"
+      }
+    },
+    {
+      "id": "restart",
+      "chapter": "06 / THE TRADEOFF",
+      "headline": "Plan for\nthe interruption.",
+      "subhead": "Some upgrades require a restart or migration.",
+      "narration": "Some upgrades require a restart or migration, so plan for interruption. And one bigger server is still one failure point without redundancy.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "waiting",
+          "color": "#efc373",
+          "packets": 6,
+          "speed": 0.5,
+          "bend": 0,
+          "lanes": 6,
+          "spread": 360
+        },
+        {
+          "from": "waiting",
+          "to": "machine",
+          "color": "#efc373",
+          "packets": 2,
+          "speed": 0.12,
+          "bend": 0,
+          "lanes": 2,
+          "spread": 260
+        }
+      ],
+      "cues": [
+        {
+          "onPhrase": "restart",
+          "transitionSeconds": 0.7,
+          "nodes": {
+            "machine": {
+              "load": 0,
+              "status": "offline"
+            },
+            "waiting": {
+              "queueDepth": 24
+            }
+          },
+          "flows": [
+            {
+              "from": "users",
+              "to": "waiting",
+              "color": "#efc373",
+              "packets": 4,
+              "speed": 0.35,
+              "bend": 0,
+              "lanes": 6,
+              "spread": 360
+            },
+            {
+              "from": "waiting",
+              "to": "machine",
+              "color": "#ef777b",
+              "packets": 0,
+              "speed": 0.12,
+              "bend": 0,
+              "lanes": 2,
+              "spread": 260
+            }
+          ]
+        }
+      ],
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "More capacity ≠ redundancy."
+      }
+    },
+    {
+      "id": "compare",
+      "chapter": "07 / REMEMBER THIS",
+      "headline": "Scale up.\nOr scale out.",
+      "subhead": "Bigger machines versus more machines.",
+      "narration": "Remember the difference: vertical scaling means a bigger machine. Horizontal scaling means more machines. Choose based on the bottleneck, cost, and reliability you need.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "waiting",
+          "color": "#efc373",
+          "packets": 4,
+          "speed": 0.35,
+          "bend": 0,
+          "lanes": 6,
+          "spread": 360
+        },
+        {
+          "from": "waiting",
+          "to": "machine",
+          "color": "#ef777b",
+          "packets": 0,
+          "speed": 0.12,
+          "bend": 0,
+          "lanes": 2,
+          "spread": 260
+        }
+      ],
+      "cues": [
+        {
+          "onPhrase": "vertical scaling",
+          "transitionSeconds": 0.8,
+          "nodes": {
+            "machine": {
+              "load": 0.3,
+              "memoryUsed": 0.3,
+              "status": "online"
+            },
+            "waiting": {
+              "opacity": 0,
+              "queueDepth": 0
+            }
+          },
+          "flows": [
+            {
+              "from": "users",
+              "to": "machine",
+              "color": "#efc373",
+              "packets": 3,
+              "speed": 0.35,
+              "bend": 0,
+              "lanes": 2,
+              "spread": 360
+            }
+          ]
+        },
+        {
+          "onPhrase": "Horizontal scaling",
+          "transitionSeconds": 1.4,
+          "nodes": {
+            "machine": {
+              "x": 260,
+              "label": "SERVER 01",
+              "scale": 0.65,
+              "cores": 2,
+              "memoryGb": 8
+            },
+            "extra1": {
+              "opacity": 1
+            },
+            "extra2": {
+              "opacity": 1
+            }
+          },
+          "flows": [
+            {
+              "from": "users",
+              "to": "machine",
+              "color": "#74d8b4",
+              "packets": 3,
+              "speed": 0.35,
+              "bend": -110,
+              "lanes": 2,
+              "spread": 100
+            },
+            {
+              "from": "users",
+              "to": "extra1",
+              "color": "#74d8b4",
+              "packets": 3,
+              "speed": 0.35,
+              "bend": 0,
+              "lanes": 2,
+              "spread": 100
+            },
+            {
+              "from": "users",
+              "to": "extra2",
+              "color": "#74d8b4",
+              "packets": 3,
+              "speed": 0.35,
+              "bend": 110,
+              "lanes": 2,
+              "spread": 100
+            }
+          ]
+        }
+      ],
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "UP = bigger / OUT = more"
+      }
+    }
+  ]
+}

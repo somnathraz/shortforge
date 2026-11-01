@@ -1,0 +1,8 @@
+{
+  "targetDurationSeconds": 40,
+  "maxScenes": 8,
+  "maxPaidMotionScenes": 2,
+  "maxPaidMotionSeconds": 10,
+  "maxCostPerShortInr": 120,
+  "paidMotionCostPerSecondInr": 12
+}

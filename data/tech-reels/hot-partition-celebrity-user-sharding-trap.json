@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "hot-partition-celebrity-user-sharding-trap",
+  "title": "Your Sharding Was Perfect. One User Still Broke a Shard.",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Show that hash sharding balances keys, not skewed access; a celebrity hot key creates a hot partition; fix with cache/replicas/hybrid fan-out, not only more shards.",
+    "caveat": "Shard counts, CPU percentages, and read rates are illustrative storytelling numbers. No claim about any specific company's current architecture.",
+    "claims": [
+      {
+        "claim": "Hash-based sharding on user_id distributes stored keys evenly when the user population is large and uniform.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Hash_function#Uses"
+      },
+      {
+        "claim": "A single highly requested key always maps to the same shard, so skewed access can concentrate load on one partition (hot key / hot partition).",
+        "sourceUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html"
+      },
+      {
+        "claim": "Increasing shard count does not by itself spread traffic for one deterministic key — that key still lands on exactly one shard.",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Consistent_hashing"
+      },
+      {
+        "claim": "Caching hot keys and adding read capacity for the affected shard are common mitigations before re-sharding the key space.",
+        "sourceUrl": "https://redis.io/docs/latest/develop/use/patterns/distributed-locks/"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "users",
+      "kind": "sphere",
+      "label": "APP USERS",
+      "x": 540,
+      "y": 500,
+      "color": "#b6bef2"
+    },
+    {
+      "id": "router",
+      "kind": "service",
+      "label": "SHARD ROUTER",
+      "x": 540,
+      "y": 700,
+      "color": "#f5c56b"
+    },
+    {
+      "id": "cache",
+      "kind": "storage",
+      "label": "REDIS CACHE",
+      "x": 540,
+      "y": 880,
+      "opacity": 0,
+      "color": "#ef777b"
+    },
+    {
+      "id": "shard0",
+      "kind": "database",
+      "label": "SHARD 0",
+      "x": 180,
+      "y": 1180,
+      "load": 0.08,
+      "color": "#8997cd"
+    },
+    {
+      "id": "shard1",
+      "kind": "database",
+      "label": "SHARD 1",
+      "x": 380,
+      "y": 1180,
+      "load": 0.07,
+      "color": "#8997cd"
+    },
+    {
+      "id": "shard2",
+      "kind": "database",
+      "label": "SHARD 2",
+      "x": 700,
+      "y": 1180,
+      "load": 0.08,
+      "color": "#8997cd"
+    },
+    {
+      "id": "shard3",
+      "kind": "database",
+      "label": "SHARD 3",
+      "x": 900,
+      "y": 1180,
+      "load": 0.06,
+      "color": "#8997cd"
+    }
+  ],
+  "beats": [
+    {
+      "id": "balanced",
+      "chapter": "01 / CALM",
+      "headline": "Four shards.\nEven hash.",
+      "subhead": "One million users, roughly balanced.",
+      "narration": "Four database shards: hash of user_id mod four. One million users run through it — roughly two fifty K per shard. Textbook balanced.",
+      "durationSeconds": 7,
+      "nodes": {
+        "router": { "label": "hash(uid) % 4" }
+      },
+      "flows": [
+        { "from": "users", "to": "router", "packets": 4, "color": "#8d9be8" },
+        { "from": "router", "to": "shard0", "packets": 2, "color": "#74d8b4", "bend": -30 },
+        { "from": "router", "to": "shard1", "packets": 2, "color": "#74d8b4", "bend": -15 },
+        { "from": "router", "to": "shard2", "packets": 2, "color": "#74d8b4", "bend": 15 },
+        { "from": "router", "to": "shard3", "packets": 2, "color": "#74d8b4", "bend": 30 }
+      ],
+      "metric": {
+        "label": "DISTRIBUTION",
+        "value": "~250K keys per shard"
+      }
+    },
+    {
+      "id": "celebrity",
+      "chapter": "02 / VIRAL",
+      "headline": "One celebrity\npost goes viral.",
+      "subhead": "Same user_id → same shard every time.",
+      "narration": "Phir ek celebrity viral photo post karta hai. User_id fixed hai, hash bhi fixed — hamesha SAME shard. Ab lakh reads sirf ek shard hit karte hain.",
+      "durationSeconds": 8,
+      "nodes": {
+        "users": { "label": "CELEBRITY READS" },
+        "router": { "label": "ALWAYS SHARD 2" },
+        "shard2": { "load": 0.45, "label": "SHARD 2 · RISING" }
+      },
+      "flows": [
+        { "from": "users", "to": "router", "packets": 8, "color": "#efc373" },
+        { "from": "router", "to": "shard2", "packets": 10, "color": "#ef777b", "speed": 0.55 },
+        { "from": "router", "to": "shard0", "packets": 1, "color": "#8d9be8", "bend": -40 },
+        { "from": "router", "to": "shard1", "packets": 1, "color": "#8d9be8", "bend": -20 },
+        { "from": "router", "to": "shard3", "packets": 1, "color": "#8d9be8", "bend": 20 }
+      ],
+      "metric": {
+        "label": "ROUTING",
+        "value": "One key · one shard"
+      }
+    },
+    {
+      "id": "hot",
+      "chapter": "03 / HOT",
+      "headline": "Three shards chill.\nOne at 100%.",
+      "subhead": "Data balanced ≠ access balanced.",
+      "narration": "Teen shards chill — paanch percent CPU. Ek shard sau percent pe. Yeh hot partition hai. Sharding ne DATA balance kiya, ACCESS pattern nahi.",
+      "durationSeconds": 8,
+      "nodes": {
+        "shard0": { "load": 0.05, "label": "SHARD 0 · 5%" },
+        "shard1": { "load": 0.04, "label": "SHARD 1 · 4%" },
+        "shard2": { "load": 1, "label": "SHARD 2 · 100%" },
+        "shard3": { "load": 0.06, "label": "SHARD 3 · 6%" }
+      },
+      "flows": [
+        { "from": "users", "to": "router", "packets": 6, "color": "#ef777b" },
+        { "from": "router", "to": "shard2", "packets": 12, "color": "#ef777b", "speed": 0.5 }
+      ],
+      "metric": {
+        "label": "HOT SHARD CPU",
+        "value": "100% · others ~5%"
+      }
+    },
+    {
+      "id": "name",
+      "chapter": "04 / THE NAME",
+      "headline": "Hot key.\nHot partition.",
+      "subhead": "Not insufficient shard count.",
+      "narration": "Isko hot key ya hot partition bolte hain. Keys evenly spread ho sakti hain, traffic nahi. Ek celebrity ek shard ko overload kar sakta hai.",
+      "durationSeconds": 7,
+      "nodes": {
+        "shard2": { "load": 1, "label": "HOT PARTITION" },
+        "shard0": { "load": 0.05 },
+        "shard1": { "load": 0.04 },
+        "shard3": { "load": 0.06 }
+      },
+      "flows": [
+        { "from": "router", "to": "shard2", "packets": 8, "color": "#ef777b" }
+      ],
+      "metric": {
+        "label": "FAILURE MODE",
+        "value": "Skewed access"
+      }
+    },
+    {
+      "id": "moreshards",
+      "chapter": "05 / NAIVE FIX",
+      "headline": "Four shards → eight?",
+      "subhead": "Same user still hits ONE shard.",
+      "narration": "Obvious fix lagta hai: shards badhao, four se eight. Same hash, same celebrity — still exactly ONE shard sab traffic leta hai. Count fix nahi karta.",
+      "durationSeconds": 8,
+      "nodes": {
+        "router": { "label": "hash(uid) % 8" },
+        "shard2": { "load": 1, "label": "STILL HOT" }
+      },
+      "flows": [
+        { "from": "users", "to": "router", "packets": 7, "color": "#ef777b" },
+        { "from": "router", "to": "shard2", "packets": 11, "color": "#ef777b", "speed": 0.48 }
+      ],
+      "metric": {
+        "label": "MORE SHARDS",
+        "value": "Same key · same shard"
+      }
+    },
+    {
+      "id": "cachefix",
+      "chapter": "06 / REAL FIX",
+      "headline": "Cache the hot key.",
+      "subhead": "Short TTL · shield the shard.",
+      "narration": "Real fix: hot key ko Redis cache ke peeche daalo, short TTL ke saath. Reads shard se pehle cache absorb kare. Us shard ke liye read replicas bhi socho.",
+      "durationSeconds": 8,
+      "nodes": {
+        "cache": { "opacity": 1, "label": "HOT KEY CACHE" },
+        "shard2": { "load": 0.25, "label": "SHARD 2 · COOLING" },
+        "router": { "label": "CACHE FIRST" }
+      },
+      "flows": [
+        { "from": "users", "to": "router", "packets": 6, "color": "#8d9be8" },
+        { "from": "router", "to": "cache", "packets": 6, "color": "#74d8b4" },
+        { "from": "cache", "to": "users", "packets": 5, "color": "#74d8b4", "bend": 45 },
+        { "from": "cache", "to": "shard2", "packets": 1, "color": "#efc373", "speed": 0.28 }
+      ],
+      "metric": {
+        "label": "MITIGATION",
+        "value": "Cache + read replicas"
+      }
+    },
+    {
+      "id": "rule",
+      "chapter": "07 / INTERVIEW",
+      "headline": "Keys balanced.\nTraffic maybe not.",
+      "subhead": "Find the hot key. Protect that shard.",
+      "narration": "Interview rule: even sharding sirf keys balance karta hai, traffic nahi. Hot key dhoondo, us shard ko cache ya replica se protect karo — blindly shards mat badhao.",
+      "durationSeconds": 7,
+      "nodes": {
+        "users": { "label": "APP USERS", "color": "#74d8b4" },
+        "cache": { "opacity": 1, "label": "PROTECT HOT KEY" },
+        "shard2": { "load": 0.15, "label": "SHARD 2 · OK" },
+        "router": { "label": "SHARD ROUTER" }
+      },
+      "flows": [
+        { "from": "users", "to": "router", "packets": 4, "color": "#8d9be8" },
+        { "from": "router", "to": "cache", "packets": 4, "color": "#efc373" },
+        { "from": "cache", "to": "shard2", "packets": 1, "color": "#74d8b4", "speed": 0.3 }
+      ],
+      "metric": {
+        "label": "SENIOR RULE",
+        "value": "Protect hot partitions"
+      }
+    }
+  ]
+}

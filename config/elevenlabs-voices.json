@@ -1,0 +1,90 @@
+{
+  "defaultVoiceId": "mSYK1wXyDo9la60dBOyK",
+  "voices": [
+    {
+      "id": "u7bRcYbD7visSINTyAT8",
+      "label": "Tech · Rahul Bharadwaj (Indian English)",
+      "description": "TECH_ENGLISH_INDIA default. Male Indian English, energetic social/educational tone for DSA Shorts."
+    },
+    {
+      "id": "pzxut4zZz4GImZNlqQ3H",
+      "label": "Tech · Raju Natural (Indian English)",
+      "description": "Male Indian English conversationalist."
+    },
+    {
+      "id": "nwj0s2LU9bDWRKND5yzA",
+      "label": "Tech · Bunty Energetic (Indian English)",
+      "description": "Male Indian English — energetic expressive social tone."
+    },
+    {
+      "id": "bajNon13EdhNMndG3z05",
+      "label": "Tech · Viraj Energetic (Indian English)",
+      "description": "Male Indian English — energetic confident."
+    },
+    {
+      "id": "siw1N9V8LmYeEWKyWBxv",
+      "label": "Tech · Ruhaan Clear (Indian English)",
+      "description": "Male Indian English — clear loud cheerful."
+    },
+    {
+      "id": "1qEiC6qsybMkmnNdVMbK",
+      "label": "Tech · Monika (Hindi optional)",
+      "description": "TECH_HINDI — optional Hindi/Hinglish path; not the DSA default."
+    },
+    {
+      "id": "mSYK1wXyDo9la60dBOyK",
+      "label": "Channel narrator (Kanika)",
+      "description": "Primary ELEVENLABS_VOICE_ID — default Hindi storyteller (female)."
+    },
+    {
+      "id": "ycM2sXpcoLsM3MLrYLgq",
+      "label": "Mythology (male, cinematic)",
+      "description": "Deep cinematic Indian male narrator — native Hindi, mythology tone."
+    },
+    {
+      "id": "BOgdqGR6ce0nZQSMHrV8",
+      "label": "Story teller (male)",
+      "description": "Warm medium-deep Indian male Hindi storyteller."
+    },
+    {
+      "id": "zgqefOY5FPQ3bB7OZTVR",
+      "label": "Niraj – Romantic & Smooth",
+      "description": "Famous Hindi male narrator (2M+ library uses). Narrative / documentary."
+    },
+    {
+      "id": "3AMU7jXQuQa3oRvRqUmb",
+      "label": "Viraj – Rich, Confident",
+      "description": "Expressive Hindi male — audiobooks & vivid storytelling."
+    },
+    {
+      "id": "d0grukerEzs069eKIauC",
+      "label": "Ranga – Powerful Brand Narrator",
+      "description": "Deep authoritative energetic Hindi male narration."
+    },
+    {
+      "id": "qDuRKMlYmrm8trt5QyBn",
+      "label": "Taksh – Calm Divine Epic",
+      "description": "Deep commanding Hindi — divine storytelling & historical epics."
+    },
+    {
+      "id": "vIdhHAZdn1bGjKe1dFw8",
+      "label": "Rudra – Intense Documentary",
+      "description": "Deep clear unhurried Hindi documentary narrator."
+    },
+    {
+      "id": "Sxk6njaoa7XLsAFT7WcN",
+      "label": "Amit Gupta – Warm Storyteller",
+      "description": "Young warm Hindi male — storytelling & audiobooks."
+    },
+    {
+      "id": "xZp4zaaBzoWhWxxrcAij",
+      "label": "Danish Khan – Calm & Clear",
+      "description": "Veteran Hindi male voice actor tone — clear expressive narration."
+    },
+    {
+      "id": "sRieWHKeAAU4rWvQs6uN",
+      "label": "Hindi narrator female",
+      "description": "Hindi mythology female narrator."
+    }
+  ]
+}

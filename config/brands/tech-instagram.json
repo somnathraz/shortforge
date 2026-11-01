@@ -1,0 +1,45 @@
+{
+  "id": "tech-instagram",
+  "kind": "tech",
+  "label": "Tech Reels",
+  "blurb": "DSA, system design, architecture, app building — one concept per Reel",
+  "studioSubtitle": "Tech education studio",
+  "episodesDir": "data/episodes-tech",
+  "universeFile": "data/universes/tech-instagram.json",
+  "scriptBrief": "templates/tech-instagram-script-llm-brief.txt",
+  "visualBrand": "TECH_EDITORIAL",
+  "defaultLanguage": "en",
+  "defaultVoiceProfile": "TECH_ENGLISH_INDIA",
+  "publishProfiles": [
+    "youtube",
+    "instagram",
+    "facebook"
+  ],
+  "s3Prefix": "epicastra/tech/",
+  "ctaDefault": "Follow for daily tech shorts — save this for interview prep.",
+  "emptyListCopy": "No tech Reels yet. Create your first one-concept episode.",
+  "newEpisodeLabel": "Create a new Reel",
+  "theme": "tech",
+  "youtubePlaylistTitle": "DSA 90 Days",
+  "commentDm": {
+    "enabled": true,
+    "keywords": [
+      "repo",
+      "code",
+      "link",
+      "github",
+      "source"
+    ],
+    "message": "Hey {name}! Thanks for watching 🙌 Here are the links:",
+    "links": [
+      {
+        "label": "Website",
+        "url": "https://somanathkhadanga.com/labs/traps"
+      },
+      {
+        "label": "GitHub repo",
+        "url": "https://github.com/somnathraz/interview-traps"
+      }
+    ]
+  }
+}

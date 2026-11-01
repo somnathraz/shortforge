@@ -1,0 +1,32 @@
+{
+  "brandId": "tech-instagram",
+  "channelPositioning": "Short-form tech education: DSA, system design, architecture, app building, and timely tech updates",
+  "primaryLanguage": "en",
+  "contentMix": {
+    "dsaPercent": 25,
+    "dsaTrapPercent": 15,
+    "sysdesignPercent": 15,
+    "architecturePercent": 10,
+    "appBuildPercent": 20,
+    "techNewsPercent": 15
+  },
+  "pillars": [
+    { "id": "dsa", "label": "DSA pattern", "exampleHook": "When two pointers actually work — and when they don't" },
+    { "id": "dsa-trap", "label": "DSA trap", "exampleHook": "This looks like dynamic programming. It isn't." },
+    { "id": "sysdesign", "label": "System design", "exampleHook": "Cache aside vs read-through in one diagram" },
+    { "id": "architecture", "label": "Architecture", "exampleHook": "Events without the distributed mess" },
+    { "id": "app-build", "label": "App building", "exampleHook": "Ship auth first — everything else is distraction" },
+    { "id": "tech-news", "label": "Tech update", "exampleHook": "What changed in this release and who should care" },
+    { "id": "interview", "label": "Interview prep", "exampleHook": "Start every system design answer here" },
+    { "id": "tooling", "label": "Tooling", "exampleHook": "One git habit that saves your team in review" }
+  ],
+  "editorialRules": [
+    "One Reel teaches exactly one concept; no multi-topic dumps.",
+    "Prefer concrete examples over abstract definitions in the first 8 seconds.",
+    "Do not invent API names, version numbers, or benchmark numbers — say 'check docs' if unsure.",
+    "Original fiction and mythology framing are out of scope.",
+    "Optimize for saves and clarity over controversy bait.",
+    "Series episodes must reference series title and part number in packaging."
+  ],
+  "defaultCta": "Follow for daily tech shorts — save this for interview prep."
+}

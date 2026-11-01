@@ -1,0 +1,23 @@
+{
+  "name": "mythology-factory-remotion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts BigOEpisode ../output/remotion/big-o-remotion.mp4",
+    "render:big-o": "remotion render src/index.ts BigOEpisode ../output/remotion/big-o-remotion.mp4 --codec h264"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.286",
+    "@remotion/renderer": "^4.0.286",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.286"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "typescript": "^5.9.2"
+  }
+}

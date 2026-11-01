@@ -1,0 +1,75 @@
+node_modules/
+dist/
+ui/dist/
+ui/node_modules/
+.venv/
+.DS_Store
+
+# Secrets & local env
+.env
+.env.*
+!.env.example
+.env.wan-nim
+*.pem
+*credentials*.json
+*token*.json
+data/desk-auth.json
+
+# ---------------------------------------------------------------------------
+# Generated publish / desk runtime — do not push content to GitHub
+# ---------------------------------------------------------------------------
+output/
+tmp/
+.temp/
+*.log
+coverage/
+
+# Episode JSON, reviews, schedules (local only)
+data/episodes/
+!data/episodes/.gitkeep
+data/reviews/
+!data/reviews/.gitkeep
+data/topics/
+!data/topics/.gitkeep
+data/publish-schedules/
+
+# Personal drafts, imports and generated reels (keep the one tracked example + README)
+data/episodes-import/
+data/dm-log/
+data/episodes-*/*.json
+!data/episodes-tech/1792080056105-big-o-time-and-space-complexity.json
+
+# Per-pipeline / per-user social tokens (never commit)
+data/connections/*
+!data/connections/.gitkeep
+!data/connections/README.md
+
+# Operator-generated / uploaded media (not the curated SFX·BGM library)
+assets/avatar/
+assets/audio/bgm/custom/
+assets/audio/sfx/custom/**
+!assets/audio/sfx/custom/.gitkeep
+assets/audio/sfx/_backup-*/
+assets/audio/sfx/_mixkit-raw/
+assets/audio/sfx/_el-raw/
+assets/audio/sfx/_incoming/
+assets/audio/bgm/_legacy-placeholders/
+assets/audio/bgm/_mixkit-raw/
+
+# Binary media everywhere…
+*.mp4
+*.wav
+*.mp3
+*.mov
+*.webm
+*.m4a
+# …except small Wan driving refs. Third-party SFX/BGM (Mixkit, Pixabay) are NOT redistributed:
+# download them yourself — see assets/audio/DOWNLOAD.md. Their *.meta.json stay tracked.
+!assets/driving/**
+
+# Editor / OS
+.idea/
+.vscode/
+
+# One-off personal import scripts
+scripts/import-*.ts

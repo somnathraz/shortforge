@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "url-shortener-day4-click-counter",
+  "title": "This One Line Crashes Your URL Shortener",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_HINDI",
+  "lang": "hi",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Explain how a synchronous click counter creates row contention and how batching removes per-click database writes.",
+    "caveat": "Rates and latency are illustrative. Redis INCR still adds a network call; GETDEL plus SQL is not crash-safe or exactly-once. Counts can lag or be lost without durable processing.",
+    "claims": [
+      {
+        "claim": "In PostgreSQL (and InnoDB), concurrent UPDATEs to the same row are serialized by a row-level lock: each transaction waits for the previous one holding the lock to commit or roll back."
+      },
+      {
+        "claim": "Under high concurrency on one hot row, this queuing raises per-request latency sharply and holds database connections while waiting, which can exhaust the connection pool and slow unrelated queries/links."
+      },
+      {
+        "claim": "The redirect path of a URL shortener is the hot, read-heavy path; adding a synchronous DB write per redirect turns every click into a write."
+      },
+      {
+        "claim": "Standard fix: record clicks off the critical path — increment an in-memory counter (e.g. Redis INCR, which is atomic) or enqueue a click event (Kafka/queue), return the redirect immediately, and have a background worker aggregate and flush counts to the DB periodically (one write per interval instead of one per click)."
+      },
+      {
+        "claim": "Trade-off: counts shown to the owner lag by the flush interval (seconds); a crash between INCR and flush can lose or delay a small window of counts unless the counter store is durable — acceptable for analytics, not for money."
+      },
+      {
+        "claim": "'20ms → 4,800ms' and '10,000 clicks/sec' are illustrative numbers for the scenario, not measured benchmarks; presented on screen as an example, not a claim about a specific system."
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "redirect",
+      "kind": "server",
+      "label": "REDIRECT",
+      "x": 540,
+      "y": 660
+    }
+  ],
+  "beats": [
+    {
+      "id": "hook",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "STOP COUNTING\nCLICKS LIKE THIS",
+      "subhead": "10,000 clicks/sec. One database row.",
+      "narration": "Ek influencer ne tumhara short link share kiya. Das hazaar clicks per second. Aur tumhara poora URL shortener — sirf ek line ki wajah se band ho gaya.",
+      "durationSeconds": 10,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "hook",
+        "narrationSlot": {
+          "kind": "spokenHook",
+          "sceneId": null,
+          "startFraction": 0,
+          "endFraction": 1
+        }
+      },
+      "metric": {
+        "label": "Example p99",
+        "value": "20ms → 4,800ms"
+      }
+    },
+    {
+      "id": "demo",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "The demo passes.\nProduction waits.",
+      "subhead": "A synchronous UPDATE inside every redirect.",
+      "narration": "Interviewer bolta hai: owner ko click count dikhana hai. Tum redirect mein clicks plus one daal dete ho. Ek request pe test pass, demo perfect.",
+      "durationSeconds": 10,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "demo",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 1,
+          "startFraction": 0,
+          "endFraction": 1
+        }
+      },
+      "metric": {
+        "label": "Demo traffic",
+        "value": "1 request"
+      }
+    },
+    {
+      "id": "hotpath",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "A read path.\nA write on every click.",
+      "subhead": "Your cache saved a read. Your counter added a write.",
+      "narration": "Destination Redis se laaye the taaki database ko chhuna na pade. Lekin counter? Har click pe database write. Redirect ka sabse garam rasta ab write ka wait kar raha hai.",
+      "durationSeconds": 10,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "hotpath",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 2,
+          "startFraction": 0,
+          "endFraction": 1
+        }
+      },
+      "metric": {
+        "label": "Critical path",
+        "value": "Every click → SQL UPDATE"
+      }
+    },
+    {
+      "id": "lock",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "One row. One lock.\nEveryone waits.",
+      "subhead": "Concurrent updates serialize on the hot row.",
+      "narration": "Das hazaar clicks, sab ek hi row update karna chahte hain. Ek transaction row lock pakadta hai, baaki line mein. Twenty milliseconds wala redirect ab seconds leta hai.",
+      "durationSeconds": 12,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "lock",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 3,
+          "startFraction": 0,
+          "endFraction": 1
+        }
+      },
+      "metric": {
+        "label": "Contention",
+        "value": "One row lock at a time"
+      }
+    },
+    {
+      "id": "pool",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "One counter.\nThe whole product down.",
+      "subhead": "Waiting writes hold shared database connections.",
+      "narration": "Connections usi line mein phanse hain. Ab doosre links ko bhi connection nahi milta. Sale aur docs jaise links timeout. Ek hot counter, poora product slow.",
+      "durationSeconds": 10,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "pool",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 4,
+          "startFraction": 0,
+          "endFraction": 1
+        }
+      },
+      "metric": {
+        "label": "Blast radius",
+        "value": "Shared connection pool"
+      }
+    },
+    {
+      "id": "counter",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "Keep SQL writes\noff the hot path.",
+      "subhead": "Increment in memory, then return the redirect.",
+      "narration": "Fix: click Redis counter mein daalo aur user ko turant destination bhejo. Redirect ko har click par database UPDATE ka wait mat karao.",
+      "durationSeconds": 10,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "counter",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 5,
+          "startFraction": 0,
+          "endFraction": 0.4
+        }
+      },
+      "metric": {
+        "label": "Redirect path",
+        "value": "INCR → return destination"
+      }
+    },
+    {
+      "id": "flush",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "Many clicks.\nOne batched write.",
+      "subhead": "A background worker aggregates every five seconds.",
+      "narration": "Background worker har paanch second clicks jod ke database mein ek baar likhta hai. Ek batch mein das hazaar events ho, toh das hazaar writes ki jagah ek.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "flush",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 5,
+          "startFraction": 0.4,
+          "endFraction": 1
+        }
+      },
+      "metric": {
+        "label": "Illustrative batch",
+        "value": "10,000 events → 1 DB write"
+      }
+    },
+    {
+      "id": "rule",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "Counts can lag.\nRedirects cannot.",
+      "subhead": "State the trade-off before the interviewer asks.",
+      "narration": "Tradeoff khud bolo: count paanch second late dikhega. Analytics late chal sakta hai, redirect slow nahi. Crash pe counts bachane ke liye durability alag design karni hogi.",
+      "durationSeconds": 7,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "rule",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 6,
+          "startFraction": 0,
+          "endFraction": 0.55
+        }
+      },
+      "metric": {
+        "label": "Trade-off",
+        "value": "~5s lag · durability matters"
+      }
+    },
+    {
+      "id": "teaser",
+      "chapter": "URL SHORTENER · DAY 4/7",
+      "headline": "Two users.\nOne /launch.",
+      "subhead": "Tomorrow: the vanity-alias race.",
+      "narration": "Kal: do log ek saath slash launch maangte hain. System dono ko bolta hai: ye tumhara hai. Kya tootega?",
+      "durationSeconds": 5,
+      "nodes": {},
+      "flows": [],
+      "template": "sys.hot-path-counter",
+      "templateProps": {
+        "stage": "teaser",
+        "narrationSlot": {
+          "kind": "scene",
+          "sceneId": 6,
+          "startFraction": 0.55,
+          "endFraction": 1
+        }
+      },
+      "metric": {
+        "label": "One System, One Week",
+        "value": "Day 5 → alias race"
+      }
+    }
+  ]
+}

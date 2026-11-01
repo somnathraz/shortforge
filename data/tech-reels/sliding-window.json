@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "sliding-window",
+  "title": "Sliding window: O(n²) to O(n)",
+  "accent": "#f5c56b",
+  "style": "window-lab",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Show why a sliding window turns nested-loop subarray work into a linear pass.",
+    "caveat": "Complexity depends on the exact problem constraints; this reel uses a fixed-size window sum as the teaching example.",
+    "claims": [
+      {
+        "claim": "A fixed-size sliding window can compute each next subarray sum in O(1) after the first window, for O(n) overall."
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "rail",
+      "kind": "service",
+      "label": "ARRAY RAIL",
+      "x": 540,
+      "y": 980
+    }
+  ],
+  "beats": [
+    {
+      "id": "hook",
+      "chapter": "01 / THE TRAP",
+      "headline": "Nested loops\nkill speed.",
+      "subhead": "Subarray sums with two loops become O(n²).",
+      "narration": "Nested loops make your code crawl. What if you could slide a window and turn O(n²) subarray work into O(n)?",
+      "durationSeconds": 6,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          2,
+          1,
+          5,
+          1,
+          3,
+          2
+        ],
+        "windowStart": 0,
+        "windowSize": 3,
+        "stage": "nested"
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Rescan = O(n²)"
+      },
+      "template": "window.array"
+    },
+    {
+      "id": "brute",
+      "chapter": "02 / BRUTE FORCE",
+      "headline": "Every window\nrecounted.",
+      "subhead": "Nested loops recompute the same cells again.",
+      "narration": "Whenever you need contiguous subarray sums, nested loops recount the same cells again and again — and that becomes O(n²).",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          2,
+          1,
+          5,
+          1,
+          3,
+          2
+        ],
+        "windowStart": 0,
+        "windowSize": 3,
+        "stage": "nested",
+        "sum": 8
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Nested loops"
+      },
+      "template": "window.array"
+    },
+    {
+      "id": "frame",
+      "chapter": "03 / THE FRAME",
+      "headline": "Fix the size.\nSlide the frame.",
+      "subhead": "A fixed-length window does not need a full rescan.",
+      "narration": "But if the window size is fixed, you do not need to rescan every cell. That pattern is the sliding window technique.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          2,
+          1,
+          5,
+          1,
+          3,
+          2
+        ],
+        "windowStart": 1,
+        "windowSize": 3,
+        "stage": "frame",
+        "sum": 7
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Fixed window k"
+      },
+      "template": "window.array"
+    },
+    {
+      "id": "update",
+      "chapter": "04 / THE UPDATE",
+      "headline": "Minus left.\nPlus right.",
+      "subhead": "Reuse the previous sum — O(1) per slide.",
+      "narration": "As the window slides, subtract the element leaving on the left and add the new one on the right. No full recount — O(1) per move.",
+      "durationSeconds": 9,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          2,
+          1,
+          5,
+          1,
+          3,
+          2
+        ],
+        "windowStart": 2,
+        "windowSize": 3,
+        "stage": "update",
+        "sum": 9
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "sum − left + right"
+      },
+      "template": "window.array"
+    },
+    {
+      "id": "compare",
+      "chapter": "05 / THE WIN",
+      "headline": "One pass.\nNot n² passes.",
+      "subhead": "Sliding window scans the array once — O(n).",
+      "narration": "That is the payoff: nested loops cost O(n²), while a sliding window scans the array once — O(n).",
+      "durationSeconds": 10,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          2,
+          1,
+          5,
+          1,
+          3
+        ],
+        "windowStart": 2,
+        "windowSize": 3,
+        "stage": "compare",
+        "sum": 9
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "O(n²) → O(n)"
+      },
+      "template": "window.array"
+    },
+    {
+      "id": "pointers",
+      "chapter": "06 / TWO EDGES",
+      "headline": "Left and right\nhold the window.",
+      "subhead": "Grow with right, shrink with left.",
+      "narration": "Two pointers hold the window — left and right. Grow with right when the condition fits; shrink with left when it breaks.",
+      "durationSeconds": 9,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          1,
+          3,
+          -1,
+          3,
+          5
+        ],
+        "windowStart": 1,
+        "windowSize": 3,
+        "left": 1,
+        "right": 3,
+        "stage": "pointers",
+        "sum": 5
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "L grow / R shrink"
+      },
+      "template": "window.array"
+    },
+    {
+      "id": "interview",
+      "chapter": "07 / REMEMBER THIS",
+      "headline": "Interview signal:\nsliding window.",
+      "subhead": "Max sum subarray · longest substring.",
+      "narration": "In interviews, max-sum subarray or longest substring questions are a signal — sliding window is your O(n) weapon.",
+      "durationSeconds": 8,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          2,
+          1,
+          5,
+          1,
+          3,
+          2
+        ],
+        "windowStart": 2,
+        "windowSize": 3,
+        "stage": "slide",
+        "sum": 9
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Your O(n) weapon"
+      },
+      "template": "window.array"
+    },
+    {
+      "id": "cta",
+      "chapter": "08 / NEXT",
+      "headline": "Next up:\ntwo pointers.",
+      "subhead": "Solve array problems faster.",
+      "narration": "Next up: two pointers — solve array problems even faster.",
+      "durationSeconds": 4,
+      "nodes": {},
+      "flows": [],
+      "window": {
+        "values": [
+          2,
+          1,
+          5,
+          1,
+          3,
+          2
+        ],
+        "windowStart": 0,
+        "windowSize": 3,
+        "stage": "cta"
+      },
+      "metric": {
+        "label": "KEY IDEA",
+        "value": "Two pointers next"
+      },
+      "template": "window.array"
+    }
+  ]
+}

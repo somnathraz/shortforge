@@ -1,0 +1,16 @@
+{
+  "channelPositioning": "Cinematic Indian mythology and original myth-inspired stories",
+  "primaryLanguage": "Hindi",
+  "initialMix": {
+    "canonicalMythologyPercent": 60,
+    "lesserKnownMythologyPercent": 25,
+    "originalFictionPercent": 15
+  },
+  "editorialRules": [
+    "Do not copy dialogue, character designs, music, clips or story treatment from modern films, TV shows, comics or other YouTube channels.",
+    "Canonical mythology claims must be reviewed before publishing.",
+    "Original myth-inspired fiction must be clearly labeled as fiction.",
+    "Never present invented details as ancient scripture or historical fact.",
+    "Optimize for story, emotion and retention rather than upload volume."
+  ]
+}

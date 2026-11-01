@@ -1,0 +1,258 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "pagination-interview-offset-vs-cursor",
+  "title": "Your pagination works — until page 100,000",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Explain deep OFFSET cost and inconsistency, then stable cursor pagination with created_at plus id and a matching index.",
+    "caveat": "OFFSET is not always wrong — it remains fine for small sets, shallow pages, admin tables, and arbitrary page jumps. Numbers are illustrative.",
+    "claims": [
+      {
+        "claim": "Large OFFSET values force the database to scan and discard preceding rows before returning LIMIT rows.",
+        "sourceUrl": "https://use-the-index-luke.com/no-offset"
+      },
+      {
+        "claim": "Offset pagination can duplicate or skip rows when the ordered dataset changes between page fetches.",
+        "sourceUrl": "https://use-the-index-luke.com/no-offset"
+      },
+      {
+        "claim": "Keyset / cursor pagination continues from the last seen ordering key instead of re-skipping earlier rows.",
+        "sourceUrl": "https://use-the-index-luke.com/sql/partial-results/fetch-next-page"
+      },
+      {
+        "claim": "A composite cursor such as created_at plus unique id keeps order deterministic when timestamps collide.",
+        "sourceUrl": "https://www.postgresql.org/docs/current/indexes-btree.html"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "client",
+      "kind": "sphere",
+      "label": "FEED CLIENT",
+      "x": 540,
+      "y": 540,
+      "color": "#b6bef2"
+    },
+    {
+      "id": "api",
+      "kind": "service",
+      "label": "LIMIT OFFSET",
+      "x": 540,
+      "y": 820,
+      "color": "#f5c56b"
+    },
+    {
+      "id": "rows",
+      "kind": "queue",
+      "label": "ORDERED ROWS",
+      "x": 540,
+      "y": 1060,
+      "queueDepth": 8,
+      "color": "#8d9be8"
+    },
+    {
+      "id": "db",
+      "kind": "database",
+      "label": "DATABASE",
+      "x": 320,
+      "y": 1320,
+      "load": 0.15,
+      "color": "#8997cd"
+    },
+    {
+      "id": "index",
+      "kind": "ring",
+      "label": "B-TREE INDEX",
+      "x": 760,
+      "y": 1320,
+      "load": 0.1,
+      "opacity": 0,
+      "color": "#74d8b4"
+    }
+  ],
+  "beats": [
+    {
+      "id": "hook",
+      "chapter": "01 / INTERVIEW",
+      "headline": "LIMIT twenty.\nOFFSET forty.",
+      "subhead": "Works… until page one lakh.",
+      "narration": "Interview mein ye pagination likha: LIMIT twenty OFFSET forty. Works perfectly. Follow-up: page one lakh pe kya hoga?",
+      "durationSeconds": 6,
+      "nodes": {
+        "api": { "label": "LIMIT 20 OFFSET 40" },
+        "db": { "load": 0.2 }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#8d9be8" },
+        { "from": "api", "to": "rows", "packets": 3, "color": "#efc373" },
+        { "from": "rows", "to": "db", "packets": 2, "color": "#8997cd" }
+      ],
+      "metric": {
+        "label": "SHALLOW PAGE",
+        "value": "OFFSET 40 · fine"
+      }
+    },
+    {
+      "id": "deep",
+      "chapter": "02 / DEEP PAGE",
+      "headline": "Page one lakh\nblows the OFFSET.",
+      "subhead": "LIMIT stays twenty. Skip work explodes.",
+      "narration": "Page one lakh par OFFSET almost two million ho jata hai. LIMIT abhi bhi twenty hai, but database ko usse pehle ke rows skip karne padte hain.",
+      "durationSeconds": 8,
+      "nodes": {
+        "api": { "label": "OFFSET ~2M" },
+        "rows": { "queueDepth": 18, "label": "HUGE SKIP" },
+        "db": { "load": 0.85, "label": "DB UNDER LOAD" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 4, "color": "#ef777b" },
+        { "from": "api", "to": "rows", "packets": 8, "color": "#ef777b", "speed": 0.55 },
+        { "from": "rows", "to": "db", "packets": 8, "color": "#ef777b", "speed": 0.55 }
+      ],
+      "metric": {
+        "label": "DEEP OFFSET",
+        "value": "Skip ~2M rows"
+      }
+    },
+    {
+      "id": "cost",
+      "chapter": "03 / THE COST",
+      "headline": "Twenty results.\nMillions skipped.",
+      "subhead": "Deeper pages mean more wasted work.",
+      "narration": "Matlab twenty rows return karne ke liye database pehle almost two million rows process karke skip karta hai. Deep pages badhenge, ye work bhi badhta jayega.",
+      "durationSeconds": 8,
+      "nodes": {
+        "rows": { "queueDepth": 20, "label": "SKIP THEN 20" },
+        "db": { "load": 1, "label": "WASTED SCAN" }
+      },
+      "flows": [
+        { "from": "api", "to": "rows", "packets": 10, "color": "#ef777b" },
+        { "from": "rows", "to": "db", "packets": 10, "color": "#ef777b" },
+        { "from": "db", "to": "client", "packets": 2, "color": "#74d8b4", "bend": 80, "speed": 0.35 }
+      ],
+      "metric": {
+        "label": "RETURNED",
+        "value": "20 rows · huge skip"
+      }
+    },
+    {
+      "id": "drift",
+      "chapter": "04 / CONSISTENCY",
+      "headline": "New insert.\nSame row twice.",
+      "subhead": "Changing data shifts every OFFSET.",
+      "narration": "Aur speed hi ek problem nahi hai. Page one ke baad top par new row insert ho to OFFSET shift ho sakta hai, aur next page mein same row dobara mil sakti hai.",
+      "durationSeconds": 8,
+      "nodes": {
+        "rows": { "queueDepth": 14, "label": "ROWS SHIFT" },
+        "api": { "label": "OFFSET DRIFT" },
+        "db": { "load": 0.55, "label": "LIVE DATASET" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#efc373" },
+        { "from": "api", "to": "rows", "packets": 5, "color": "#ef777b" },
+        { "from": "rows", "to": "client", "packets": 4, "color": "#ef777b", "bend": -60 }
+      ],
+      "metric": {
+        "label": "BUG",
+        "value": "Duplicate / skip"
+      }
+    },
+    {
+      "id": "cursor",
+      "chapter": "05 / CURSOR",
+      "headline": "Don't re-skip.\nResume from here.",
+      "subhead": "Ask where the last page ended.",
+      "narration": "Feeds ya infinite scroll ke liye better question: skip kitne rows nahi — last page kahan end hua tha? Yahin se cursor pagination start hota hai.",
+      "durationSeconds": 7,
+      "nodes": {
+        "api": { "label": "KEYSET CURSOR", "color": "#74d8b4" },
+        "rows": { "queueDepth": 6, "label": "FROM LAST KEY" },
+        "db": { "load": 0.3, "label": "DATABASE" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#8d9be8" },
+        { "from": "api", "to": "rows", "packets": 3, "color": "#efc373" },
+        { "from": "rows", "to": "db", "packets": 2, "color": "#74d8b4" }
+      ],
+      "metric": {
+        "label": "IDEA",
+        "value": "Continue · don't skip"
+      }
+    },
+    {
+      "id": "tiebreak",
+      "chapter": "06 / TRAP",
+      "headline": "Same timestamp.\nAmbiguous cursor.",
+      "subhead": "created_at alone is not enough.",
+      "narration": "Simple version: last created_at ke baad ke next twenty records do. But trap: agar do rows ka created_at exactly same ho to?",
+      "durationSeconds": 7,
+      "nodes": {
+        "api": { "label": "created_at ONLY" },
+        "rows": { "queueDepth": 10, "label": "TIE ROWS" },
+        "db": { "load": 0.4 }
+      },
+      "flows": [
+        { "from": "api", "to": "rows", "packets": 4, "color": "#ef777b" },
+        { "from": "rows", "to": "db", "packets": 4, "color": "#ef777b" }
+      ],
+      "metric": {
+        "label": "WARNING",
+        "value": "Equal created_at"
+      }
+    },
+    {
+      "id": "stable",
+      "chapter": "07 / STABLE KEY",
+      "headline": "created_at + id.\nMatching index.",
+      "subhead": "Query and index share one order.",
+      "narration": "Isliye stable cursor banao: created_at plus unique id. Query aur index dono same ordering follow karenge.",
+      "durationSeconds": 6,
+      "nodes": {
+        "api": { "label": "created_at + id", "color": "#74d8b4" },
+        "index": { "opacity": 1, "load": 0.45, "label": "(ts, id) INDEX" },
+        "rows": { "queueDepth": 5, "label": "NEXT 20" },
+        "db": { "load": 0.22, "label": "DATABASE" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#8d9be8" },
+        { "from": "api", "to": "index", "packets": 2, "color": "#efc373" },
+        { "from": "index", "to": "db", "packets": 2, "color": "#74d8b4" },
+        { "from": "db", "to": "client", "packets": 3, "color": "#74d8b4", "bend": 70 }
+      ],
+      "metric": {
+        "label": "COMPOSITE KEY",
+        "value": "created_at + unique id"
+      }
+    },
+    {
+      "id": "rule",
+      "chapter": "08 / INTERVIEW RULE",
+      "headline": "OFFSET for jumps.\nCursor for feeds.",
+      "subhead": "Match the use-case. Don't absolutize.",
+      "narration": "Cursor feeds ke liye great hai, but page five hundred par direct jump nahi deta. Interview rule: use-case dekho — OFFSET simple, cursor scale aur consistency.",
+      "durationSeconds": 7,
+      "nodes": {
+        "api": { "label": "MATCH USE-CASE", "color": "#74d8b4" },
+        "index": { "opacity": 1, "load": 0.3, "label": "(ts, id) INDEX" },
+        "rows": { "queueDepth": 4, "label": "FEED OR JUMP" },
+        "db": { "load": 0.18, "label": "DATABASE" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#8d9be8" },
+        { "from": "api", "to": "rows", "packets": 2, "color": "#efc373" },
+        { "from": "api", "to": "index", "packets": 2, "color": "#74d8b4" },
+        { "from": "db", "to": "client", "packets": 2, "color": "#74d8b4", "bend": 55 }
+      ],
+      "metric": {
+        "label": "INTERVIEW RULE",
+        "value": "Match the use-case"
+      }
+    }
+  ]
+}

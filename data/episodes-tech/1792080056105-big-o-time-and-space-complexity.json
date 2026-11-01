@@ -1,0 +1,527 @@
+{
+  "id": "dsa-day1-big-o-time-space-complexity-v3",
+  "brandId": "tech-instagram",
+  "storyKind": "TECH_EDUCATION",
+  "topic": "Big O — Time and Space Complexity",
+  "titleHi": "Big O — Time and Space Complexity",
+  "titleEn": "Big O Explained: Time & Space Complexity",
+  "hookHi": "Before solving DSA problems, understand how we measure how an algorithm scales.",
+  "spokenHook": "Before solving DSA problems, understand this first: what does Big O actually tell us?",
+  "spokenHookDurationSeconds": 5,
+  "hookDelivery": "confident",
+  "featuredLords": [
+    {
+      "nameEn": "Input Size n",
+      "nameHi": "Input Size n",
+      "importance": "primary",
+      "visualIdentity": "Clean variable n inside a rounded tech card representing input size",
+      "doNotConfuseWith": "runtime measured in seconds"
+    },
+    {
+      "nameEn": "Operations",
+      "nameHi": "Operations",
+      "importance": "supporting",
+      "visualIdentity": "Operation counter increasing as input grows",
+      "doNotConfuseWith": "CPU clock speed"
+    },
+    {
+      "nameEn": "Extra Memory",
+      "nameHi": "Extra Memory",
+      "importance": "supporting",
+      "visualIdentity": "Memory blocks representing additional storage created by an algorithm",
+      "doNotConfuseWith": "the original input itself"
+    }
+  ],
+  "hookTechVisual": {
+    "visualType": "TECH_HOOK",
+    "visualData": {
+      "title": "Big O",
+      "subtitle": "How does your code scale?",
+      "complexity": "n ↑"
+    },
+    "animationSteps": [
+      {
+        "at": 0,
+        "action": "showHook"
+      },
+      {
+        "at": 0.55,
+        "action": "showComplexity",
+        "value": "n ↑"
+      }
+    ]
+  },
+  "targetDurationSeconds": 58,
+  "audience": "TEENS_ADULTS",
+  "fictionDisclosureRequired": false,
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "claimsToVerify": [
+      "Big O describes asymptotic growth rather than exact execution time.",
+      "Direct array indexing is commonly modeled as O(1).",
+      "Traversing n elements once is O(n).",
+      "Two complete nested traversals over n elements are O(n squared).",
+      "Repeatedly halving a problem produces logarithmic growth.",
+      "Traversing an array without allocating proportional additional storage can use O(1) auxiliary space."
+    ],
+    "notes": [
+      "Keep Day 1 conceptual.",
+      "JavaScript is the primary language.",
+      "Narration must describe exactly what techVisual displays.",
+      "Do not use unrelated analogies while a technical diagram is on screen.",
+      "Teaching diagrams are deterministic. Do not use AI-generated text, numbers or code."
+    ]
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "startSecond": 5,
+      "durationSeconds": 7,
+      "narrationHi": "Big O does not tell us exact seconds. It tells us how the amount of work grows as our input gets bigger.",
+      "visualPrompt": "Deterministic growth bars via techVisual. No AI image.",
+      "camera": "static",
+      "importance": 10,
+      "renderMode": "STILL",
+      "soundCue": "soft tech click",
+      "appearingLords": [
+        "Input Size n",
+        "Operations"
+      ],
+      "techVisual": {
+        "visualType": "GROWTH_BARS",
+        "visualData": {
+          "title": "More input → more work",
+          "complexity": "growth",
+          "inputSizes": [
+            10,
+            100,
+            1000
+          ],
+          "operations": [
+            10,
+            100,
+            1000
+          ]
+        },
+        "animationSteps": [
+          {
+            "at": 0,
+            "action": "showBars"
+          },
+          {
+            "at": 0.18,
+            "action": "growthStep",
+            "index": 0
+          },
+          {
+            "at": 0.4,
+            "action": "growthStep",
+            "index": 1
+          },
+          {
+            "at": 0.65,
+            "action": "growthStep",
+            "index": 2
+          },
+          {
+            "at": 0.85,
+            "action": "showComplexity",
+            "value": "growth"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "startSecond": 12,
+      "durationSeconds": 7,
+      "narrationHi": "Take this array. If we ask for index two, JavaScript directly accesses thirty. It does not scan the values before it. That's O of one.",
+      "visualPrompt": "Exact deterministic JavaScript array lookup via techVisual.",
+      "camera": "static",
+      "importance": 10,
+      "renderMode": "STILL",
+      "soundCue": "single digital tap",
+      "appearingLords": [
+        "Input Size n",
+        "Operations"
+      ],
+      "techVisual": {
+        "visualType": "ARRAY_LOOKUP",
+        "visualData": {
+          "title": "Direct access = O(1)",
+          "complexity": "O(1)",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50
+          ],
+          "targetIndex": 2,
+          "result": 30
+        },
+        "animationSteps": [
+          {
+            "at": 0,
+            "action": "showArray"
+          },
+          {
+            "at": 0.18,
+            "action": "showIndexPointer",
+            "index": 2
+          },
+          {
+            "at": 0.38,
+            "action": "highlightCell",
+            "index": 2
+          },
+          {
+            "at": 0.6,
+            "action": "showResult"
+          },
+          {
+            "at": 0.8,
+            "action": "showComplexity",
+            "value": "O(1)"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "startSecond": 19,
+      "durationSeconds": 8,
+      "narrationHi": "Now suppose we check every value. We visit two, four, six, eight and ten. As the number of elements grows, the number of checks grows too. That's O of n.",
+      "visualPrompt": "Exact deterministic array traversal via techVisual.",
+      "camera": "static",
+      "importance": 10,
+      "renderMode": "STILL",
+      "soundCue": "five subtle ticks",
+      "appearingLords": [
+        "Input Size n",
+        "Operations"
+      ],
+      "techVisual": {
+        "visualType": "ARRAY_TRAVERSAL",
+        "visualData": {
+          "title": "Check every item = O(n)",
+          "complexity": "O(n)",
+          "values": [
+            2,
+            4,
+            6,
+            8,
+            10
+          ]
+        },
+        "animationSteps": [
+          {
+            "at": 0,
+            "action": "showArray"
+          },
+          {
+            "at": 0.12,
+            "action": "traverseTo",
+            "index": 0
+          },
+          {
+            "at": 0.27,
+            "action": "traverseTo",
+            "index": 1
+          },
+          {
+            "at": 0.42,
+            "action": "traverseTo",
+            "index": 2
+          },
+          {
+            "at": 0.57,
+            "action": "traverseTo",
+            "index": 3
+          },
+          {
+            "at": 0.72,
+            "action": "traverseTo",
+            "index": 4
+          },
+          {
+            "at": 0.88,
+            "action": "showComplexity",
+            "value": "O(n)"
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "startSecond": 27,
+      "durationSeconds": 8,
+      "narrationHi": "Now put one full loop inside another. With four items, we perform four checks for each of four rows: four times four equals sixteen. That's O of n squared.",
+      "visualPrompt": "Exact deterministic nested-loop grid via techVisual.",
+      "camera": "static",
+      "importance": 10,
+      "renderMode": "STILL",
+      "soundCue": "accelerating soft ticks",
+      "appearingLords": [
+        "Input Size n",
+        "Operations"
+      ],
+      "techVisual": {
+        "visualType": "NESTED_LOOP_GRID",
+        "visualData": {
+          "title": "Nested loops = O(n²)",
+          "complexity": "O(n²)",
+          "rows": 4,
+          "columns": 4
+        },
+        "animationSteps": [
+          {
+            "at": 0,
+            "action": "showGrid"
+          },
+          {
+            "at": 0.16,
+            "action": "fillRow",
+            "row": 0
+          },
+          {
+            "at": 0.32,
+            "action": "fillRow",
+            "row": 1
+          },
+          {
+            "at": 0.48,
+            "action": "fillRow",
+            "row": 2
+          },
+          {
+            "at": 0.64,
+            "action": "fillRow",
+            "row": 3
+          },
+          {
+            "at": 0.78,
+            "action": "showEquation"
+          },
+          {
+            "at": 0.9,
+            "action": "showComplexity",
+            "value": "O(n²)"
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "startSecond": 35,
+      "durationSeconds": 8,
+      "narrationHi": "Now watch what happens when we cut the remaining problem in half. Thirty-two becomes sixteen, eight, four, two, then one. That's logarithmic growth: O of log n.",
+      "visualPrompt": "Exact deterministic halving sequence via techVisual.",
+      "camera": "static",
+      "importance": 10,
+      "renderMode": "STILL",
+      "soundCue": "descending digital ticks",
+      "appearingLords": [
+        "Input Size n",
+        "Operations"
+      ],
+      "techVisual": {
+        "visualType": "HALVING",
+        "visualData": {
+          "title": "Keep cutting in half = O(log n)",
+          "complexity": "O(log n)",
+          "sequence": [
+            32,
+            16,
+            8,
+            4,
+            2,
+            1
+          ]
+        },
+        "animationSteps": [
+          {
+            "at": 0,
+            "action": "halveTo",
+            "index": 0
+          },
+          {
+            "at": 0.14,
+            "action": "halveTo",
+            "index": 1
+          },
+          {
+            "at": 0.28,
+            "action": "halveTo",
+            "index": 2
+          },
+          {
+            "at": 0.42,
+            "action": "halveTo",
+            "index": 3
+          },
+          {
+            "at": 0.56,
+            "action": "halveTo",
+            "index": 4
+          },
+          {
+            "at": 0.7,
+            "action": "halveTo",
+            "index": 5
+          },
+          {
+            "at": 0.88,
+            "action": "showComplexity",
+            "value": "O(log n)"
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "startSecond": 43,
+      "durationSeconds": 8,
+      "narrationHi": "Time and space measure different things. Checking every element takes O of n time, but if we only keep one extra variable, the extra space stays O of one.",
+      "visualPrompt": "Exact deterministic time versus auxiliary space visualization.",
+      "camera": "static",
+      "importance": 10,
+      "renderMode": "STILL",
+      "soundCue": "soft split transition",
+      "appearingLords": [
+        "Operations",
+        "Extra Memory"
+      ],
+      "techVisual": {
+        "visualType": "TIME_VS_SPACE",
+        "visualData": {
+          "title": "Time ≠ Extra Space",
+          "values": [
+            2,
+            4,
+            6,
+            8,
+            10
+          ],
+          "timeLabel": "O(n)",
+          "spaceLabel": "O(1)"
+        },
+        "animationSteps": [
+          {
+            "at": 0,
+            "action": "showSplit"
+          },
+          {
+            "at": 0.18,
+            "action": "traverseTo",
+            "index": 0
+          },
+          {
+            "at": 0.36,
+            "action": "traverseTo",
+            "index": 2
+          },
+          {
+            "at": 0.54,
+            "action": "traverseTo",
+            "index": 4
+          },
+          {
+            "at": 0.76,
+            "action": "showComplexity",
+            "value": "time ≠ space"
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "startSecond": 51,
+      "durationSeconds": 7,
+      "narrationHi": "So don't memorize these symbols. Ask one question: when n grows, how quickly do the work and extra memory grow?",
+      "visualPrompt": "Exact deterministic Big O complexity ladder.",
+      "camera": "static",
+      "importance": 10,
+      "renderMode": "STILL",
+      "soundCue": "clean completion chime",
+      "appearingLords": [
+        "Input Size n",
+        "Operations",
+        "Extra Memory"
+      ],
+      "techVisual": {
+        "visualType": "COMPLEXITY_LADDER",
+        "visualData": {
+          "title": "How does it scale?",
+          "ladder": [
+            "O(1)",
+            "O(log n)",
+            "O(n)",
+            "O(n log n)",
+            "O(n²)"
+          ]
+        },
+        "animationSteps": [
+          {
+            "at": 0,
+            "action": "showLadder"
+          },
+          {
+            "at": 0.1,
+            "action": "revealLadderItem",
+            "index": 0
+          },
+          {
+            "at": 0.25,
+            "action": "revealLadderItem",
+            "index": 1
+          },
+          {
+            "at": 0.4,
+            "action": "revealLadderItem",
+            "index": 2
+          },
+          {
+            "at": 0.55,
+            "action": "revealLadderItem",
+            "index": 3
+          },
+          {
+            "at": 0.7,
+            "action": "revealLadderItem",
+            "index": 4
+          }
+        ]
+      }
+    }
+  ],
+  "ending": {
+    "payoffHi": "Big O tells us how an algorithm scales as the input grows.",
+    "nextEpisodeTeaseHi": "Next: Arrays. Why reading by index is O(1), but inserting in the middle can become O(n)."
+  },
+  "metadata": {
+    "descriptionHi": "Day 1 of DSA from Zero to Interview Ready. Learn Big O visually using direct array access, array traversal, nested loops, repeated halving, and time versus space complexity.",
+    "keywords": [
+      "big o",
+      "time complexity",
+      "space complexity",
+      "dsa",
+      "javascript",
+      "java",
+      "coding interview",
+      "algorithms",
+      "data structures",
+      "interview preparation"
+    ],
+    "thumbnailTextHi": "BIG O — Understand It Visually"
+  },
+  "publishingTitles": {
+    "en": {
+      "shared": "Big O Explained Visually for Beginners",
+      "instagram": "Stop Memorizing Big O — Understand It Visually"
+    }
+  },
+  "visualStyle": {
+    "brand": "TECH_EDITORIAL"
+  }
+}

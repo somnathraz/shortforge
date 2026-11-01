@@ -1,0 +1,209 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "redis-cache-stampede-one-key-outage",
+  "title": "One Redis key expired. Then the database died.",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Explain cache stampede when a hot key expires, and mitigations: coalesce, lock TTL, jitter, stale-while-revalidate.",
+    "caveat": "CPU percentages and traffic counts are illustrative storytelling numbers, not a measured production incident. Redis itself did not fail.",
+    "claims": [
+      {
+        "claim": "Many concurrent misses on the same popular cache key can independently query the database (cache stampede / thundering herd).",
+        "sourceUrl": "https://en.wikipedia.org/wiki/Thundering_herd_problem"
+      },
+      {
+        "claim": "Request coalescing or single-flight can share one in-flight regeneration across waiters.",
+        "sourceUrl": "https://pkg.go.dev/golang.org/x/sync/singleflight"
+      },
+      {
+        "claim": "Lock expiry, TTL jitter, and stale-while-revalidate are common mitigations for stampede risk.",
+        "sourceUrl": "https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Strategies.html"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "users",
+      "kind": "sphere",
+      "label": "LIVE SCORE READERS",
+      "x": 540,
+      "y": 560,
+      "color": "#b6bef2"
+    },
+    {
+      "id": "redis",
+      "kind": "storage",
+      "label": "REDIS CACHE",
+      "x": 540,
+      "y": 900,
+      "color": "#ef777b"
+    },
+    {
+      "id": "gate",
+      "kind": "service",
+      "label": "SINGLE FLIGHT",
+      "x": 540,
+      "y": 1120,
+      "color": "#f5c56b",
+      "opacity": 0
+    },
+    {
+      "id": "db",
+      "kind": "database",
+      "label": "DATABASE",
+      "x": 540,
+      "y": 1340,
+      "load": 0.08,
+      "color": "#8997cd"
+    }
+  ],
+  "beats": [
+    {
+      "id": "healthy",
+      "chapter": "01 / CALM",
+      "headline": "Hits stay in Redis.",
+      "subhead": "Database CPU sits near eight percent.",
+      "narration": "Five lakh users check the same live cricket score. Every request hits Redis, gets the score, and leaves. Fast. Cheap. Perfect.",
+      "durationSeconds": 7,
+      "nodes": {
+        "db": { "load": 0.08 }
+      },
+      "flows": [
+        { "from": "users", "to": "redis", "packets": 6, "color": "#74d8b4" },
+        { "from": "redis", "to": "users", "packets": 6, "color": "#74d8b4", "bend": 40 }
+      ],
+      "metric": {
+        "label": "DATABASE CPU",
+        "value": "About 8%"
+      }
+    },
+    {
+      "id": "expire",
+      "chapter": "02 / THE MISS",
+      "headline": "One hot key expires.",
+      "subhead": "The next thousand miss too.",
+      "narration": "Then that popular cache key expires. The first request misses Redis. So do the next thousand, and the next ten thousand.",
+      "durationSeconds": 7,
+      "nodes": {
+        "redis": { "label": "KEY EXPIRED" },
+        "db": { "load": 0.25 }
+      },
+      "flows": [
+        { "from": "users", "to": "redis", "packets": 8, "color": "#ef777b" }
+      ],
+      "metric": {
+        "label": "CACHE",
+        "value": "Mass miss on one key"
+      }
+    },
+    {
+      "id": "stampede",
+      "chapter": "03 / THE FLOOD",
+      "headline": "Thousands hit the database.",
+      "subhead": "CPU goes from calm to fire.",
+      "narration": "Instead of one rebuild, thousands of requests run straight to the database. CPU goes from calm to one hundred percent.",
+      "durationSeconds": 7,
+      "nodes": {
+        "db": { "load": 1, "label": "DATABASE · 100% CPU" },
+        "redis": { "label": "REDIS CACHE" }
+      },
+      "flows": [
+        { "from": "users", "to": "redis", "packets": 4, "color": "#ef777b" },
+        { "from": "redis", "to": "db", "packets": 10, "color": "#ef777b", "speed": 0.45 }
+      ],
+      "metric": {
+        "label": "DATABASE CPU",
+        "value": "100%"
+      }
+    },
+    {
+      "id": "name",
+      "chapter": "04 / THE NAME",
+      "headline": "This is a cache stampede.",
+      "subhead": "Redis did not crash. Design did.",
+      "narration": "Redis did not crash. The database did not crash first either. They worked as designed. This failure is called a cache stampede.",
+      "durationSeconds": 7,
+      "nodes": {
+        "db": { "load": 1, "label": "OVERLOADED DB" },
+        "redis": { "label": "REDIS · HEALTHY" }
+      },
+      "flows": [
+        { "from": "redis", "to": "db", "packets": 6, "color": "#ef777b" }
+      ],
+      "metric": {
+        "label": "FAILURE MODE",
+        "value": "Cache stampede"
+      }
+    },
+    {
+      "id": "coalesce",
+      "chapter": "05 / FIRST FIX",
+      "headline": "Only one rebuild runs.",
+      "subhead": "Everyone else waits on that result.",
+      "narration": "Obvious fix: after a miss, let only one request fetch fresh data. Everyone else waits while that request rebuilds the cache.",
+      "durationSeconds": 7,
+      "nodes": {
+        "gate": { "opacity": 1, "label": "SINGLE FLIGHT" },
+        "db": { "load": 0.35, "label": "DATABASE" }
+      },
+      "flows": [
+        { "from": "users", "to": "redis", "packets": 5, "color": "#8d9be8" },
+        { "from": "redis", "to": "gate", "packets": 5, "color": "#8d9be8" },
+        { "from": "gate", "to": "db", "packets": 1, "color": "#efc373", "speed": 0.28 },
+        { "from": "db", "to": "redis", "packets": 1, "color": "#74d8b4", "bend": 50 }
+      ],
+      "metric": {
+        "label": "REGENERATION",
+        "value": "Many waiters · one fetch"
+      }
+    },
+    {
+      "id": "lockfail",
+      "chapter": "06 / THE CATCH",
+      "headline": "What if that worker dies?",
+      "subhead": "Waiters stuck behind a dead lock.",
+      "narration": "Not quite solved. If that one request crashes while holding the lock, everyone waits for a worker that may never return.",
+      "durationSeconds": 8,
+      "nodes": {
+        "gate": { "opacity": 1, "label": "LOCK HELD · CRASHED" },
+        "db": { "load": 0.15 }
+      },
+      "flows": [
+        { "from": "users", "to": "redis", "packets": 4, "color": "#ef777b" },
+        { "from": "redis", "to": "gate", "packets": 4, "color": "#ef777b" }
+      ],
+      "metric": {
+        "label": "RISK",
+        "value": "Dead lock · stuck waiters"
+      }
+    },
+    {
+      "id": "harden",
+      "chapter": "07 / PRODUCTION",
+      "headline": "Protect the database.",
+      "subhead": "Lock TTL, jitter, stale while refresh.",
+      "narration": "Add lock expiry, TTL jitter, and stale while refresh. Caching is not only speed. It is protecting your database.",
+      "durationSeconds": 8,
+      "nodes": {
+        "gate": { "opacity": 1, "label": "LOCK TTL · JITTER · SWR" },
+        "redis": { "label": "REDIS SHIELD" },
+        "db": { "load": 0.12, "label": "DATABASE" }
+      },
+      "flows": [
+        { "from": "users", "to": "redis", "packets": 5, "color": "#74d8b4" },
+        { "from": "redis", "to": "users", "packets": 5, "color": "#74d8b4", "bend": 35 },
+        { "from": "gate", "to": "db", "packets": 1, "color": "#efc373", "speed": 0.3 },
+        { "from": "db", "to": "redis", "packets": 1, "color": "#74d8b4", "bend": -40 }
+      ],
+      "metric": {
+        "label": "SENIOR TAKEAWAY",
+        "value": "Design the miss path"
+      }
+    }
+  ]
+}

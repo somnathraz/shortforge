@@ -1,0 +1,42 @@
+{
+  "profiles": {
+    "economy": {
+      "research": "openrouter",
+      "script": "openrouter",
+      "voice": "edge_tts",
+      "routineImage": "pollinations",
+      "characterMaster": "pollinations",
+      "ordinaryMotion": "ffmpeg",
+      "characterMotion": "wan_nim",
+      "heroVideo": "wan_nim"
+    },
+    "balanced": {
+      "research": "openai_web_search",
+      "script": "openai",
+      "voice": "elevenlabs",
+      "routineImage": "google_flash_image",
+      "characterMaster": "google_pro_image",
+      "ordinaryMotion": "ffmpeg",
+      "characterMotion": "wan_nim",
+      "heroVideo": "google_omni_flash"
+    },
+    "quality": {
+      "research": "openai_web_search",
+      "script": "openai",
+      "voice": "elevenlabs",
+      "routineImage": "google_flash_image",
+      "characterMaster": "google_pro_image",
+      "ordinaryMotion": "ffmpeg",
+      "characterMotion": "wan_nim",
+      "heroVideo": "google_veo"
+    }
+  },
+  "defaultProfile": "balanced",
+  "spendingRules": {
+    "premiumScriptCallsPerEpisode": 1,
+    "premiumCharacterMasterImagesPerCharacter": 1,
+    "premiumHeroVideoScenesPerShort": 1,
+    "useFfmpegForRemainingScenes": true,
+    "requireHumanApprovalBeforePaidVideo": true
+  }
+}

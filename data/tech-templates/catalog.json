@@ -1,0 +1,42 @@
+[
+  {
+    "id": "mobility.map",
+    "title": "City map matching (draft)",
+    "pack": "mobility",
+    "llm": "Use for Uber-like nearby search / match / route. Pass map props in beat.templateProps. Scaffold more mobility.* scenes as needed.",
+    "requires": [
+      "none"
+    ],
+    "status": "draft"
+  },
+  {
+    "id": "scale.machine",
+    "title": "Vertical scale machine",
+    "pack": "scale",
+    "llm": "Use for scale-up / single-machine capacity lessons. Requires beat.hardware.",
+    "requires": [
+      "hardware"
+    ],
+    "status": "ready"
+  },
+  {
+    "id": "sys.hot-path-counter",
+    "title": "Hot-path counter: contention to batching",
+    "pack": "sys",
+    "llm": "Click analytics and hot-row contention. templateProps.stage: hook, demo, hotpath, lock, pool, counter, flush, rule, teaser.",
+    "requires": [
+      "none"
+    ],
+    "status": "ready"
+  },
+  {
+    "id": "window.array",
+    "title": "Sliding-window particle array",
+    "pack": "window",
+    "llm": "Use for contiguous subarray / sliding window / two-pointer array lessons. Requires beat.window.",
+    "requires": [
+      "window"
+    ],
+    "status": "ready"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "defaultSpeaker": "shubh",
+  "voices": [
+    { "id": "shubh", "label": "Shubh", "description": "Default male — clear storytelling" },
+    { "id": "aditya", "label": "Aditya", "description": "Male — warm narrator" },
+    { "id": "anand", "label": "Anand", "description": "Male — calm, measured" },
+    { "id": "rahul", "label": "Rahul", "description": "Male — conversational" },
+    { "id": "rohan", "label": "Rohan", "description": "Male — energetic" },
+    { "id": "priya", "label": "Priya", "description": "Female — clear Hindi" },
+    { "id": "ritu", "label": "Ritu", "description": "Female — soft, emotional" },
+    { "id": "neha", "label": "Neha", "description": "Female — bright" },
+    { "id": "pooja", "label": "Pooja", "description": "Female — warm" },
+    { "id": "simran", "label": "Simran", "description": "Female — expressive" },
+    { "id": "kavya", "label": "Kavya", "description": "Female — storytelling" },
+    { "id": "ishita", "label": "Ishita", "description": "Female — gentle" }
+  ]
+}

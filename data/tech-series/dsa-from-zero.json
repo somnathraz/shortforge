@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "id": "dsa-from-zero",
+  "title": "DSA from Zero",
+  "pitch": "Interview-ready patterns, one idea per day.",
+  "days": [
+    {
+      "day": 1,
+      "title": "Big O basics",
+      "topic": "Time and space complexity with array access, loops, and halving",
+      "reelId": "vertical-scaling",
+      "templateId": "custom.demo"
+    },
+    {
+      "day": 2,
+      "title": "Arrays & hashing",
+      "topic": "When a hash map beats nested loops for lookups"
+    },
+    {
+      "day": 3,
+      "title": "Sliding window",
+      "topic": "Fixed-size sliding window: O(n²) nested loops to O(n)",
+      "reelId": "sliding-window",
+      "templateId": "window.array"
+    }
+  ],
+  "updatedAt": "2026-10-17T10:49:41.492Z"
+}

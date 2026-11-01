@@ -1,0 +1,509 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "request-coalescing",
+  "title": "A thousand requests. One database read.",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "nodes": [
+    {
+      "id": "users",
+      "kind": "sphere",
+      "label": "ONE POPULAR CHANNEL",
+      "x": 540,
+      "y": 565,
+      "color": "#b6bef2"
+    },
+    {
+      "id": "api0",
+      "kind": "server",
+      "label": "API 1",
+      "x": 165,
+      "y": 850
+    },
+    {
+      "id": "api1",
+      "kind": "server",
+      "label": "API 2",
+      "x": 315,
+      "y": 850
+    },
+    {
+      "id": "api2",
+      "kind": "server",
+      "label": "API 3",
+      "x": 465,
+      "y": 850
+    },
+    {
+      "id": "api3",
+      "kind": "server",
+      "label": "API 4",
+      "x": 615,
+      "y": 850
+    },
+    {
+      "id": "api4",
+      "kind": "server",
+      "label": "API 5",
+      "x": 765,
+      "y": 850
+    },
+    {
+      "id": "api5",
+      "kind": "server",
+      "label": "API 6",
+      "x": 915,
+      "y": 850
+    },
+    {
+      "id": "service",
+      "kind": "service",
+      "label": "REQUEST COALESCING",
+      "x": 540,
+      "y": 1060,
+      "color": "#f5c56b",
+      "opacity": 0
+    },
+    {
+      "id": "ring",
+      "kind": "ring",
+      "label": "DATABASE PARTITIONS",
+      "x": 540,
+      "y": 1280,
+      "load": 0.1,
+      "color": "#8997cd"
+    }
+  ],
+  "beats": [
+    {
+      "id": "burst",
+      "chapter": "A TRAFFIC SPIKE",
+      "headline": "One channel. A wave of reads.",
+      "subhead": "An announcement sends everyone to the same data.",
+      "narration": "Imagine a busy chat channel. One announcement arrives, and thousands of people ask for the same messages at almost the same time.",
+      "durationSeconds": 7,
+      "nodes": {},
+      "flows": [
+        {
+          "from": "users",
+          "to": "api0",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api1",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api2",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api3",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api4",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api5",
+          "packets": 4
+        }
+      ],
+      "metric": {
+        "label": "THE WORKLOAD",
+        "value": "Many users · the same data"
+      }
+    },
+    {
+      "id": "duplicates",
+      "chapter": "THE FAILURE MODE",
+      "headline": "Every server asks again.",
+      "subhead": "Duplicate work lands on the same hot partition.",
+      "narration": "Requests spread across application servers, but each server asks the database separately. The same partition gets hammered with duplicate work.",
+      "durationSeconds": 7,
+      "nodes": {
+        "ring": {
+          "load": 1
+        }
+      },
+      "flows": [
+        {
+          "from": "users",
+          "to": "api0",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api1",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api2",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api3",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api4",
+          "packets": 4
+        },
+        {
+          "from": "users",
+          "to": "api5",
+          "packets": 4
+        },
+        {
+          "from": "api0",
+          "to": "ring",
+          "packets": 6,
+          "color": "#ef777b",
+          "bend": -50
+        },
+        {
+          "from": "api1",
+          "to": "ring",
+          "packets": 6,
+          "color": "#ef777b",
+          "bend": -30
+        },
+        {
+          "from": "api2",
+          "to": "ring",
+          "packets": 6,
+          "color": "#ef777b",
+          "bend": -10
+        },
+        {
+          "from": "api3",
+          "to": "ring",
+          "packets": 6,
+          "color": "#ef777b",
+          "bend": 10
+        },
+        {
+          "from": "api4",
+          "to": "ring",
+          "packets": 6,
+          "color": "#ef777b",
+          "bend": 30
+        },
+        {
+          "from": "api5",
+          "to": "ring",
+          "packets": 6,
+          "color": "#ef777b",
+          "bend": 50
+        }
+      ],
+      "metric": {
+        "label": "THE BOTTLENECK",
+        "value": "Repeated reads of one key"
+      }
+    },
+    {
+      "id": "group",
+      "chapter": "FIX / SERVICE LAYER",
+      "headline": "Group the identical requests.",
+      "subhead": "The first starts the read. The rest join it.",
+      "narration": "Add a coalescing layer. For an identical in-flight request, the first caller starts the read. Later callers wait for that result.",
+      "durationSeconds": 7,
+      "nodes": {
+        "service": {
+          "opacity": 1
+        },
+        "ring": {
+          "load": 0.65
+        }
+      },
+      "flows": [
+        {
+          "from": "api0",
+          "to": "service",
+          "packets": 4
+        },
+        {
+          "from": "api1",
+          "to": "service",
+          "packets": 4
+        },
+        {
+          "from": "api2",
+          "to": "service",
+          "packets": 4
+        },
+        {
+          "from": "api3",
+          "to": "service",
+          "packets": 4
+        },
+        {
+          "from": "api4",
+          "to": "service",
+          "packets": 4
+        },
+        {
+          "from": "api5",
+          "to": "service",
+          "packets": 4
+        },
+        {
+          "from": "service",
+          "to": "ring",
+          "packets": 1,
+          "color": "#efc373",
+          "speed": 0.32
+        }
+      ],
+      "metric": {
+        "label": "IN-FLIGHT WORK",
+        "value": "Many callers → one query"
+      }
+    },
+    {
+      "id": "once",
+      "chapter": "FOLLOW THE REQUEST",
+      "headline": "Ask the database once.",
+      "subhead": "One shared result for the waiting callers.",
+      "narration": "Now follow the gold request. One database read produces one result, shared by all the callers waiting for that same operation.",
+      "durationSeconds": 7,
+      "nodes": {
+        "ring": {
+          "load": 0.18
+        }
+      },
+      "flows": [
+        {
+          "from": "service",
+          "to": "ring",
+          "packets": 1,
+          "color": "#efc373",
+          "speed": 0.25
+        },
+        {
+          "from": "ring",
+          "to": "service",
+          "packets": 1,
+          "color": "#74d8b4",
+          "speed": 0.25,
+          "bend": 65
+        }
+      ],
+      "metric": {
+        "label": "DATABASE WORK",
+        "value": "One shared read"
+      }
+    },
+    {
+      "id": "fanout",
+      "chapter": "RETURN THE RESULT",
+      "headline": "Send the answer back out.",
+      "subhead": "Less duplicate work. The same waiting users.",
+      "narration": "The result fans back out to the waiting servers. We reduced duplicate database work without dropping the requests people actually made.",
+      "durationSeconds": 7,
+      "nodes": {
+        "ring": {
+          "load": 0.1
+        }
+      },
+      "flows": [
+        {
+          "from": "ring",
+          "to": "service",
+          "packets": 1,
+          "color": "#74d8b4",
+          "speed": 0.35
+        },
+        {
+          "from": "service",
+          "to": "api0",
+          "packets": 3,
+          "color": "#efc373"
+        },
+        {
+          "from": "service",
+          "to": "api1",
+          "packets": 3,
+          "color": "#efc373"
+        },
+        {
+          "from": "service",
+          "to": "api2",
+          "packets": 3,
+          "color": "#efc373"
+        },
+        {
+          "from": "service",
+          "to": "api3",
+          "packets": 3,
+          "color": "#efc373"
+        },
+        {
+          "from": "service",
+          "to": "api4",
+          "packets": 3,
+          "color": "#efc373"
+        },
+        {
+          "from": "service",
+          "to": "api5",
+          "packets": 3,
+          "color": "#efc373"
+        },
+        {
+          "from": "api0",
+          "to": "users",
+          "packets": 3
+        },
+        {
+          "from": "api1",
+          "to": "users",
+          "packets": 3
+        },
+        {
+          "from": "api2",
+          "to": "users",
+          "packets": 3
+        },
+        {
+          "from": "api3",
+          "to": "users",
+          "packets": 3
+        },
+        {
+          "from": "api4",
+          "to": "users",
+          "packets": 3
+        },
+        {
+          "from": "api5",
+          "to": "users",
+          "packets": 3
+        }
+      ],
+      "metric": {
+        "label": "RESPONSE PATH",
+        "value": "One result → many callers"
+      }
+    },
+    {
+      "id": "limits",
+      "chapter": "KNOW THE LIMIT",
+      "headline": "Coalescing is not a cache.",
+      "subhead": "Only matching requests that overlap can share work.",
+      "narration": "This is not a cache. Once the operation completes, a later request may need another read. Different keys still require separate work.",
+      "durationSeconds": 7,
+      "nodes": {
+        "service": {
+          "label": "IN-FLIGHT REQUESTS ONLY"
+        }
+      },
+      "flows": [
+        {
+          "from": "api1",
+          "to": "service",
+          "packets": 2,
+          "color": "#8d9be8"
+        },
+        {
+          "from": "api4",
+          "to": "service",
+          "packets": 2,
+          "color": "#efc373"
+        },
+        {
+          "from": "service",
+          "to": "ring",
+          "packets": 2,
+          "color": "#efc373"
+        }
+      ],
+      "metric": {
+        "label": "SCOPE",
+        "value": "Same key · overlapping work"
+      }
+    },
+    {
+      "id": "result",
+      "chapter": "THE TAKEAWAY",
+      "headline": "Scale the work, not the waste.",
+      "subhead": "Find the hot key. Remove repeated work. Measure again.",
+      "narration": "Before adding more servers, inspect the work they create. Sometimes the biggest improvement is making the same expensive request only once.",
+      "durationSeconds": 7,
+      "nodes": {
+        "ring": {
+          "load": 0.12
+        },
+        "service": {
+          "label": "REQUEST COALESCING"
+        }
+      },
+      "flows": [
+        {
+          "from": "api0",
+          "to": "service",
+          "packets": 2
+        },
+        {
+          "from": "api1",
+          "to": "service",
+          "packets": 2
+        },
+        {
+          "from": "api2",
+          "to": "service",
+          "packets": 2
+        },
+        {
+          "from": "api3",
+          "to": "service",
+          "packets": 2
+        },
+        {
+          "from": "api4",
+          "to": "service",
+          "packets": 2
+        },
+        {
+          "from": "api5",
+          "to": "service",
+          "packets": 2
+        },
+        {
+          "from": "service",
+          "to": "ring",
+          "packets": 1,
+          "color": "#efc373"
+        }
+      ],
+      "metric": {
+        "label": "SYSTEM DESIGN",
+        "value": "Find waste / share work"
+      }
+    }
+  ],
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Explain how concurrent same-key reads can share one in-flight result.",
+    "caveat": "Illustrative workload, not a measured benchmark or a claim about a specific company. A real implementation must handle errors and cancellation.",
+    "claims": [
+      {
+        "claim": "Concurrent calls for the same key can share a single in-flight execution.",
+        "sourceUrl": "https://pkg.go.dev/golang.org/x/sync/singleflight"
+      }
+    ]
+  }
+}

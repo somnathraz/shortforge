@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "php2shell-production-security-incident",
+  "title": "Your code was fine. PHP underneath wasn't.",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Teach senior production response to critical PHP runtime vulnerabilities: inventory exposure, WAF as temporary containment, controlled canary patching, verification, and post-patch investigation — without exploit how-to.",
+    "caveat": "PHP2Shell and fleet counts are illustrative incident storytelling. No exploitation payloads or bypass instructions. Patch version numbers refer to public PHP security advisories.",
+    "claims": [
+      {
+        "claim": "PHP released emergency security updates for critical remote code execution vulnerabilities; upgrading the runtime is the complete remediation.",
+        "sourceUrl": "https://www.php.net/downloads.php"
+      },
+      {
+        "claim": "PHP documents that there are no complete mitigations other than updating vulnerable installations.",
+        "sourceUrl": "https://www.php.net/manual/en/security.php"
+      },
+      {
+        "claim": "AWS reported observing exploitation attempts related to PHP runtime vulnerabilities before broad public disclosure.",
+        "sourceUrl": "https://aws.amazon.com/blogs/security/"
+      },
+      {
+        "claim": "A WAF or exposure reduction can limit immediate risk but does not replace patching the vulnerable runtime.",
+        "sourceUrl": "https://owasp.org/www-community/Web_Application_Firewall"
+      },
+      {
+        "claim": "After possible exploitation, defenders should review logs and investigate unexpected process or file activity, not assume patch alone proves a clean host.",
+        "sourceUrl": "https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "internet",
+      "kind": "sphere",
+      "label": "INTERNET",
+      "x": 540,
+      "y": 480,
+      "color": "#b6bef2"
+    },
+    {
+      "id": "app",
+      "kind": "server",
+      "label": "PROD APP",
+      "x": 540,
+      "y": 640,
+      "color": "#74d8b4"
+    },
+    {
+      "id": "framework",
+      "kind": "service",
+      "label": "FRAMEWORK",
+      "x": 540,
+      "y": 800,
+      "color": "#f5c56b"
+    },
+    {
+      "id": "php",
+      "kind": "service",
+      "label": "PHP RUNTIME",
+      "x": 540,
+      "y": 960,
+      "load": 0.2,
+      "color": "#ef777b"
+    },
+    {
+      "id": "waf",
+      "kind": "service",
+      "label": "WAF",
+      "x": 820,
+      "y": 720,
+      "opacity": 0,
+      "color": "#8997cd"
+    },
+    {
+      "id": "fleet",
+      "kind": "ring",
+      "label": "PROD FLEET",
+      "x": 540,
+      "y": 1180,
+      "load": 0.15,
+      "color": "#8997cd"
+    },
+    {
+      "id": "canary",
+      "kind": "sphere",
+      "label": "CANARY 5%",
+      "x": 300,
+      "y": 1180,
+      "opacity": 0,
+      "color": "#74d8b4"
+    }
+  ],
+  "beats": [
+    {
+      "id": "hook",
+      "chapter": "01 / INCIDENT",
+      "headline": "Code secure.\nGo offline NOW.",
+      "subhead": "Production healthy — then security escalates.",
+      "narration": "Imagine code secure hai, framework updated, production healthy... phir security team bolti hai: website offline NOW. Why?",
+      "durationSeconds": 7,
+      "nodes": {
+        "app": { "label": "HEALTHY", "color": "#74d8b4" },
+        "framework": { "label": "UPDATED" },
+        "php": { "load": 0.35, "label": "RUNTIME CVE" },
+        "internet": { "label": "TRAFFIC ON" }
+      },
+      "flows": [
+        { "from": "internet", "to": "app", "packets": 4, "color": "#8d9be8" },
+        { "from": "app", "to": "framework", "packets": 3, "color": "#74d8b4" },
+        { "from": "framework", "to": "php", "packets": 3, "color": "#efc373" }
+      ],
+      "metric": {
+        "label": "ORDER",
+        "value": "Offline · critical CVE"
+      }
+    },
+    {
+      "id": "runtime",
+      "chapter": "02 / LAYER",
+      "headline": "Not your Laravel.\nPHP underneath.",
+      "subhead": "App and framework can look fine while runtime is exposed.",
+      "narration": "Is week PHP mein critical CVE disclose hui. Bug Laravel, WordPress ya business code mein nahi — vulnerable layer PHP runtime khud ho sakta hai.",
+      "durationSeconds": 8,
+      "nodes": {
+        "app": { "label": "APP OK", "color": "#74d8b4" },
+        "framework": { "label": "FW OK", "color": "#74d8b4" },
+        "php": { "load": 0.85, "label": "CVE · RCE", "color": "#ef777b" },
+        "internet": { "opacity": 0.4, "label": "EXPOSURE" }
+      },
+      "flows": [
+        { "from": "internet", "to": "php", "packets": 5, "color": "#ef777b", "bend": 40 },
+        { "from": "app", "to": "php", "packets": 2, "color": "#efc373" }
+      ],
+      "metric": {
+        "label": "ROOT",
+        "value": "Runtime · not app code"
+      }
+    },
+    {
+      "id": "inventory",
+      "chapter": "03 / IDENTIFY",
+      "headline": "Patch later.\nInventory first.",
+      "subhead": "Which hosts still run a vulnerable PHP version?",
+      "narration": "Company ke paas five hundred servers? First question patch nahi. Pehle inventory: kaun-kaun se systems abhi bhi vulnerable PHP version chala rahe hain?",
+      "durationSeconds": 8,
+      "nodes": {
+        "fleet": { "load": 0.55, "label": "500 HOSTS ?" },
+        "php": { "label": "VERSION SCAN", "load": 0.5 },
+        "app": { "opacity": 0.35 },
+        "framework": { "opacity": 0.35 }
+      },
+      "flows": [
+        { "from": "php", "to": "fleet", "packets": 6, "color": "#efc373" },
+        { "from": "fleet", "to": "php", "packets": 4, "color": "#8d9be8", "bend": 50 }
+      ],
+      "metric": {
+        "label": "STEP 1",
+        "value": "Identify exposure"
+      }
+    },
+    {
+      "id": "contain",
+      "chapter": "04 / CONTAIN",
+      "headline": "WAF buys time.\nNot the fix.",
+      "subhead": "Reduce exposure while you prepare patched runtime.",
+      "narration": "Internet-facing vulnerable hosts mile? WAF rules lagao, unnecessary public access band karo, monitoring badhao. Ye time khareedte hain — vulnerability remove nahi karte.",
+      "durationSeconds": 8,
+      "nodes": {
+        "waf": { "opacity": 1, "label": "WAF ON", "load": 0.45 },
+        "php": { "load": 0.7, "label": "STILL CVE" },
+        "internet": { "label": "TRAFFIC" },
+        "fleet": { "load": 0.4, "label": "FLEET" }
+      },
+      "flows": [
+        { "from": "internet", "to": "waf", "packets": 5, "color": "#8d9be8" },
+        { "from": "waf", "to": "app", "packets": 3, "color": "#8997cd" },
+        { "from": "internet", "to": "fleet", "packets": 2, "color": "#ef777b", "speed": 0.35 }
+      ],
+      "metric": {
+        "label": "WAF",
+        "value": "Mitigate · not remediate"
+      }
+    },
+    {
+      "id": "blast",
+      "chapter": "05 / BLAST RADIUS",
+      "headline": "PATCH ALL 500?\nStop.",
+      "subhead": "One bad rollout turns security into outage.",
+      "narration": "Real fix patched runtime hai. But five hundred servers ek saath update karo aur compatibility break? Security incident fix karke availability incident mat banao.",
+      "durationSeconds": 8,
+      "nodes": {
+        "fleet": { "load": 0.95, "label": "PATCH ALL?", "color": "#ef777b" },
+        "php": { "label": "NEW RUNTIME", "load": 0.6 },
+        "app": { "label": "APP RISK", "color": "#ef777b" },
+        "waf": { "opacity": 0.6 }
+      },
+      "flows": [
+        { "from": "php", "to": "fleet", "packets": 8, "color": "#ef777b", "speed": 0.65 },
+        { "from": "fleet", "to": "app", "packets": 4, "color": "#ef777b" }
+      ],
+      "metric": {
+        "label": "RISK",
+        "value": "Big-bang patch blast"
+      }
+    },
+    {
+      "id": "canary-roll",
+      "chapter": "06 / PATCH",
+      "headline": "Canary 5%.\nThen expand.",
+      "subhead": "Verify error rate, latency, and critical flows.",
+      "narration": "Safer rollout: patched image banao, chhota canary deploy karo. Error rate, latency, health checks verify karo. Healthy hai? Tab gradual rollout badhao.",
+      "durationSeconds": 8,
+      "nodes": {
+        "canary": { "opacity": 1, "label": "CANARY 5%", "color": "#74d8b4" },
+        "fleet": { "load": 0.35, "label": "95% OLD" },
+        "php": { "label": "PATCHED PHP", "load": 0.25, "color": "#74d8b4" },
+        "app": { "label": "HEALTH OK", "color": "#74d8b4" }
+      },
+      "flows": [
+        { "from": "php", "to": "canary", "packets": 3, "color": "#74d8b4" },
+        { "from": "canary", "to": "app", "packets": 3, "color": "#74d8b4" },
+        { "from": "canary", "to": "fleet", "packets": 2, "color": "#efc373", "bend": -40 }
+      ],
+      "metric": {
+        "label": "VERIFY",
+        "value": "Canary · then widen"
+      }
+    },
+    {
+      "id": "investigate",
+      "chapter": "07 / SENIOR LOOP",
+      "headline": "Patch ≠ clean.\nInvestigate.",
+      "subhead": "Identify → Contain → Patch → Verify → Investigate.",
+      "narration": "Patch complete matlab incident khatam nahi. Logs check karo, unexpected processes investigate karo. Senior loop yaad rakho: Identify, Contain, Patch, Verify, Investigate.",
+      "durationSeconds": 8,
+      "nodes": {
+        "fleet": { "load": 0.25, "label": "PATCHED FLEET", "color": "#74d8b4" },
+        "php": { "label": "FIXED RUNTIME", "color": "#74d8b4", "load": 0.15 },
+        "canary": { "opacity": 0 },
+        "waf": { "opacity": 0.5, "label": "LOGS" },
+        "app": { "label": "PRODUCTION" }
+      },
+      "flows": [
+        { "from": "waf", "to": "fleet", "packets": 3, "color": "#8d9be8" },
+        { "from": "fleet", "to": "php", "packets": 2, "color": "#74d8b4" },
+        { "from": "php", "to": "app", "packets": 3, "color": "#74d8b4" }
+      ],
+      "metric": {
+        "label": "PLAYBOOK",
+        "value": "I · C · P · V · I"
+      }
+    }
+  ]
+}

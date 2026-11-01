@@ -1,0 +1,815 @@
+{
+  "brandId": "tech-instagram",
+  "slug": "codewithsom",
+  "label": "Tech Reels",
+  "fetchedAt": "2026-10-25T03:05:23.156Z",
+  "youtube": {
+    "channel": {
+      "title": "CodeWithSom",
+      "customUrl": "@buildwithsom",
+      "subscribers": 33,
+      "views": 2481,
+      "videos": 13
+    },
+    "days": [
+      {
+        "day": "2026-10-19",
+        "views": 128,
+        "minutes": 18,
+        "avd": 20,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-09-22",
+        "views": 1,
+        "minutes": 0,
+        "avd": 0,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-08",
+        "views": 1,
+        "minutes": 1,
+        "avd": 114,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-16",
+        "views": 12,
+        "minutes": 0,
+        "avd": 13,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-04",
+        "views": 1,
+        "minutes": 0,
+        "avd": 0,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-21",
+        "views": 141,
+        "minutes": 26,
+        "avd": 26,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-18",
+        "views": 130,
+        "minutes": 28,
+        "avd": 36,
+        "subsGained": 2
+      },
+      {
+        "day": "2026-10-15",
+        "views": 42,
+        "minutes": 10,
+        "avd": 46,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-09-23",
+        "views": 3,
+        "minutes": 0,
+        "avd": 0,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-20",
+        "views": 152,
+        "minutes": 23,
+        "avd": 22,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-22",
+        "views": 43,
+        "minutes": 10,
+        "avd": 37,
+        "subsGained": 0
+      },
+      {
+        "day": "2026-10-17",
+        "views": 384,
+        "minutes": 100,
+        "avd": 39,
+        "subsGained": 3
+      }
+    ],
+    "byMonth": {
+      "2026-10": [
+        {
+          "id": "5XSzBuZsoiQ",
+          "title": "Why more servers can slow your database #Shorts",
+          "publishedAt": "2026-10-17T12:21:44Z",
+          "durationSec": 64,
+          "duration": "1:04",
+          "url": "https://www.youtube.com/shorts/5XSzBuZsoiQ",
+          "dataViews": 493,
+          "dataLikes": 14,
+          "dataComments": 0,
+          "analytics": {
+            "views": 492,
+            "minutes": 120,
+            "avd": 37,
+            "avp": 57.87,
+            "likes": 14,
+            "comments": 0,
+            "shares": 0,
+            "subsGained": 4,
+            "subsLost": 0
+          },
+          "episodeId": "database-scaling",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Why more servers can slow your database #Shorts",
+          "retention": {
+            "1%": {
+              "watchRatio": 1.306,
+              "relative": 0.618
+            },
+            "5%": {
+              "watchRatio": 1.18,
+              "relative": 0.467
+            },
+            "10%": {
+              "watchRatio": 0.984,
+              "relative": 0.436
+            },
+            "25%": {
+              "watchRatio": 0.661,
+              "relative": 0.492
+            },
+            "50%": {
+              "watchRatio": 0.541,
+              "relative": 0.622
+            },
+            "75%": {
+              "watchRatio": 0.432,
+              "relative": 0.678
+            },
+            "90%": {
+              "watchRatio": 0.372,
+              "relative": 0.794
+            },
+            "first10Drop": 0.322
+          }
+        },
+        {
+          "id": "ANhXx7UJfIc",
+          "title": "Sliding window: O(n²) to O(n) #Shorts",
+          "publishedAt": "2026-10-20T12:49:55Z",
+          "durationSec": 69,
+          "duration": "1:09",
+          "url": "https://www.youtube.com/shorts/ANhXx7UJfIc",
+          "dataViews": 195,
+          "dataLikes": 3,
+          "dataComments": 0,
+          "analytics": {
+            "views": 195,
+            "minutes": 33,
+            "avd": 25,
+            "avp": 36.41,
+            "likes": 3,
+            "comments": 0,
+            "shares": 0,
+            "subsGained": 0,
+            "subsLost": 0
+          },
+          "episodeId": "sample-sliding-window",
+          "titleHi": "Sliding Window — O(n²) से O(n)",
+          "titleEn": "Sliding window: O(n²) to O(n)",
+          "topic": "Sliding window technique — O(n²) to O(n)",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "Sliding window: O(n²) to O(n) #Shorts",
+          "retention": {
+            "1%": {
+              "watchRatio": 1.067,
+              "relative": 0.366
+            },
+            "5%": {
+              "watchRatio": 1.04,
+              "relative": 0.207
+            },
+            "10%": {
+              "watchRatio": 0.947,
+              "relative": 0.189
+            },
+            "25%": {
+              "watchRatio": 0.453,
+              "relative": 0.13
+            },
+            "50%": {
+              "watchRatio": 0.333,
+              "relative": 0.162
+            },
+            "75%": {
+              "watchRatio": 0.16,
+              "relative": 0.062
+            },
+            "90%": {
+              "watchRatio": 0.08,
+              "relative": 0.17
+            },
+            "first10Drop": 0.12
+          }
+        },
+        {
+          "id": "6QnBdwoS5nA",
+          "title": "Why your server hits a wall after upgrading CPU? #Shorts",
+          "publishedAt": "2026-10-19T12:56:00Z",
+          "durationSec": 70,
+          "duration": "1:10",
+          "url": "https://www.youtube.com/shorts/6QnBdwoS5nA",
+          "dataViews": 154,
+          "dataLikes": 3,
+          "dataComments": 0,
+          "analytics": {
+            "views": 153,
+            "minutes": 18,
+            "avd": 18,
+            "avp": 26.179999999999996,
+            "likes": 3,
+            "comments": 0,
+            "shares": 0,
+            "subsGained": 0,
+            "subsLost": 0
+          },
+          "episodeId": "vertical-scaling",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Why your server hits a wall after upgrading CPU? #Shorts",
+          "retention": {
+            "1%": {
+              "watchRatio": 1.057,
+              "relative": 0.324
+            },
+            "5%": {
+              "watchRatio": 1.019,
+              "relative": 0.141
+            },
+            "10%": {
+              "watchRatio": 0.642,
+              "relative": 0.143
+            },
+            "25%": {
+              "watchRatio": 0.321,
+              "relative": 0.224
+            },
+            "50%": {
+              "watchRatio": 0.132,
+              "relative": 0.397
+            },
+            "75%": {
+              "watchRatio": 0.132,
+              "relative": 0.82
+            },
+            "90%": {
+              "watchRatio": 0.113,
+              "relative": 0.573
+            },
+            "first10Drop": 0.415
+          }
+        },
+        {
+          "id": "JWP4nLkqblo",
+          "title": "Big O Explained: Time & Space Complexity",
+          "publishedAt": "2026-10-15T16:17:46Z",
+          "durationSec": 74,
+          "duration": "1:14",
+          "url": "https://www.youtube.com/shorts/JWP4nLkqblo",
+          "dataViews": 92,
+          "dataLikes": 5,
+          "dataComments": 0,
+          "analytics": {
+            "views": 88,
+            "minutes": 20,
+            "avd": 43,
+            "avp": 58.62,
+            "likes": 5,
+            "comments": 0,
+            "shares": 0,
+            "subsGained": 0,
+            "subsLost": 0
+          },
+          "episodeId": null,
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Big O Explained: Time & Space Complexity",
+          "retention": {
+            "1%": {
+              "watchRatio": 1.259,
+              "relative": 0.614
+            },
+            "5%": {
+              "watchRatio": 1.222,
+              "relative": 0.479
+            },
+            "10%": {
+              "watchRatio": 0.963,
+              "relative": 0.472
+            },
+            "25%": {
+              "watchRatio": 0.63,
+              "relative": 0.499
+            },
+            "50%": {
+              "watchRatio": 0.481,
+              "relative": 0.585
+            },
+            "75%": {
+              "watchRatio": 0.518,
+              "relative": 0.817
+            },
+            "90%": {
+              "watchRatio": 0.444,
+              "relative": 0.786
+            },
+            "first10Drop": 0.296
+          }
+        },
+        {
+          "id": "3NFOUiBsDC0",
+          "title": "Your Pagination Works. Then the Interviewer Asks: Page 100,000? #Shorts",
+          "publishedAt": "2026-10-23T14:31:19Z",
+          "durationSec": 88,
+          "duration": "1:28",
+          "url": "https://www.youtube.com/shorts/3NFOUiBsDC0",
+          "dataViews": 56,
+          "dataLikes": 0,
+          "dataComments": 0,
+          "analytics": null,
+          "episodeId": "pagination-interview-offset-vs-cursor",
+          "titleHi": "Pagination Code सही था… लेकिन Page 1 Lakh पर क्या होगा?",
+          "titleEn": "Your Pagination Works — Until Page 100,000",
+          "topic": "Offset pagination performance and consistency vs cursor pagination",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "Your Pagination Works. Then the Interviewer Asks: Page 100,000? #Shorts",
+          "retention": null
+        },
+        {
+          "id": "YM0LLkRrzWw",
+          "title": "Why 1000 Requests Still Hit DB Once? #Shorts",
+          "publishedAt": "2026-10-18T11:52:55Z",
+          "durationSec": 67,
+          "duration": "1:07",
+          "url": "https://www.youtube.com/shorts/YM0LLkRrzWw",
+          "dataViews": 45,
+          "dataLikes": 0,
+          "dataComments": 0,
+          "analytics": {
+            "views": 43,
+            "minutes": 6,
+            "avd": 21,
+            "avp": 32.8,
+            "likes": 0,
+            "comments": 0,
+            "shares": 0,
+            "subsGained": 0,
+            "subsLost": 0
+          },
+          "episodeId": "request-coalescing",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Why 1000 Requests Still Hit DB Once? #Shorts",
+          "retention": {
+            "1%": {
+              "watchRatio": 1.067,
+              "relative": 0.382
+            },
+            "5%": {
+              "watchRatio": 1.067,
+              "relative": 0.245
+            },
+            "10%": {
+              "watchRatio": 0.8,
+              "relative": 0.274
+            },
+            "25%": {
+              "watchRatio": 0.4,
+              "relative": 0.423
+            },
+            "50%": {
+              "watchRatio": 0.267,
+              "relative": 0.387
+            },
+            "75%": {
+              "watchRatio": 0.133,
+              "relative": 0.073
+            },
+            "90%": {
+              "watchRatio": 0.133,
+              "relative": 0.157
+            },
+            "first10Drop": 0.267
+          }
+        },
+        {
+          "id": "IL_yaTJ-g3c",
+          "title": "This Code Sold One Seat To Two People. Find The Bug. #Shorts",
+          "publishedAt": "2026-10-21T14:23:37Z",
+          "durationSec": 76,
+          "duration": "1:16",
+          "url": "https://www.youtube.com/shorts/IL_yaTJ-g3c",
+          "dataViews": 42,
+          "dataLikes": 1,
+          "dataComments": 0,
+          "analytics": {
+            "views": 41,
+            "minutes": 9,
+            "avd": 28,
+            "avp": 37.93,
+            "likes": 1,
+            "comments": 0,
+            "shares": 0,
+            "subsGained": 0,
+            "subsLost": 0
+          },
+          "episodeId": "movie-ticket-race-condition-v2",
+          "titleHi": "Interview mein Booking Manager likha, local pe sab chala... phir bhi reject?",
+          "titleEn": "Your Booking Code Works Locally. It Still Sells One Seat Twice.",
+          "topic": "Check-then-act race condition in a booking system (interview scenario)",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "This Code Sold One Seat To Two People. Find The Bug. #Shorts",
+          "retention": {
+            "1%": {
+              "watchRatio": 1.056,
+              "relative": 0.349
+            },
+            "5%": {
+              "watchRatio": 1,
+              "relative": 0.159
+            },
+            "10%": {
+              "watchRatio": 0.722,
+              "relative": 0.12
+            },
+            "25%": {
+              "watchRatio": 0.5,
+              "relative": 0.067
+            },
+            "50%": {
+              "watchRatio": 0.333,
+              "relative": 0.349
+            },
+            "75%": {
+              "watchRatio": 0.278,
+              "relative": 0.463
+            },
+            "90%": {
+              "watchRatio": 0.222,
+              "relative": 0.14
+            },
+            "first10Drop": 0.333
+          }
+        },
+        {
+          "id": "LKXG7R3VPL4",
+          "title": "One Redis Key Expired. Then the Database Died. #Shorts",
+          "publishedAt": "2026-10-22T14:10:38Z",
+          "durationSec": 67,
+          "duration": "1:07",
+          "url": "https://www.youtube.com/shorts/LKXG7R3VPL4",
+          "dataViews": 24,
+          "dataLikes": 1,
+          "dataComments": 0,
+          "analytics": {
+            "views": 17,
+            "minutes": 6,
+            "avd": 42,
+            "avp": 63.73,
+            "likes": 1,
+            "comments": 0,
+            "shares": 0,
+            "subsGained": 0,
+            "subsLost": 0
+          },
+          "episodeId": "redis-cache-stampede-one-key-outage",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "One Redis Key Expired. Then the Database Died. #Shorts",
+          "retention": null
+        },
+        {
+          "id": "KMQpxMQGX0U",
+          "title": "The Database Committed. The Client Saw a Timeout. Now What? #Shorts",
+          "publishedAt": "2026-10-24T14:43:45Z",
+          "durationSec": 93,
+          "duration": "1:33",
+          "url": "https://www.youtube.com/shorts/KMQpxMQGX0U",
+          "dataViews": 23,
+          "dataLikes": 0,
+          "dataComments": 0,
+          "analytics": null,
+          "episodeId": "api-timeout-idempotency-interview-trap",
+          "titleHi": "Database SUCCESS… Client TIMEOUT — Request Fail हुआ या नहीं?",
+          "titleEn": "Database Says SUCCESS. Client Says TIMEOUT. Did the Request Fail?",
+          "topic": "Ambiguous failures, safe retries and idempotency keys",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "The Database Committed. The Client Saw a Timeout. Now What? #Shorts",
+          "retention": null
+        }
+      ]
+    }
+  },
+  "instagram": {
+    "account": {
+      "username": "codewithsom",
+      "followers": 95,
+      "mediaCount": 68
+    },
+    "byMonth": {
+      "2026-10": [
+        {
+          "id": "18123672530488747",
+          "title": "THIS PAGINATION WORKS... UNTIL IT DOESN'T",
+          "publishedAt": "2026-10-23T14:31:17+0000",
+          "permalink": "https://www.instagram.com/reel/De1xsqtFeJn/",
+          "product": "REELS",
+          "likes": 35,
+          "comments": 0,
+          "insights": {
+            "views": 2410,
+            "reach": 2014,
+            "total_interactions": 96,
+            "likes": 35,
+            "comments": 0,
+            "shares": 12,
+            "saved": 49,
+            "ig_reels_avg_watch_time": 23554,
+            "ig_reels_video_view_total_time": 47626217,
+            "reels_skip_rate": 44.6
+          },
+          "episodeId": "pagination-interview-offset-vs-cursor",
+          "titleHi": "Pagination Code सही था… लेकिन Page 1 Lakh पर क्या होगा?",
+          "titleEn": "Your Pagination Works — Until Page 100,000",
+          "topic": "Offset pagination performance and consistency vs cursor pagination",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "THIS PAGINATION WORKS... UNTIL IT DOESN'T"
+        },
+        {
+          "id": "18075774254741055",
+          "title": "INTERVIEW: BUILD BOOKING MANAGER. YOUR CODE HAS A BUG.",
+          "publishedAt": "2026-10-21T14:19:18+0000",
+          "permalink": "https://www.instagram.com/reel/Dewmu3WlcDq/",
+          "product": "REELS",
+          "likes": 23,
+          "comments": 0,
+          "insights": {
+            "views": 2035,
+            "reach": 1735,
+            "total_interactions": 40,
+            "likes": 23,
+            "comments": 0,
+            "shares": 4,
+            "saved": 13,
+            "ig_reels_avg_watch_time": 16250,
+            "ig_reels_video_view_total_time": 29186244,
+            "reels_skip_rate": 56.2
+          },
+          "episodeId": "movie-ticket-race-condition-v2",
+          "titleHi": "Interview mein Booking Manager likha, local pe sab chala... phir bhi reject?",
+          "titleEn": "Your Booking Code Works Locally. It Still Sells One Seat Twice.",
+          "topic": "Check-then-act race condition in a booking system (interview scenario)",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "INTERVIEW: BUILD BOOKING MANAGER. YOUR CODE HAS A BUG."
+        },
+        {
+          "id": "17871790209647345",
+          "title": "ONE CACHE KEY → DATABASE OUTAGE 💀",
+          "publishedAt": "2026-10-22T14:07:24+0000",
+          "permalink": "https://www.instagram.com/reel/DezKLUokyog/",
+          "product": "REELS",
+          "likes": 31,
+          "comments": 0,
+          "insights": {
+            "views": 1914,
+            "reach": 1632,
+            "total_interactions": 53,
+            "likes": 31,
+            "comments": 0,
+            "shares": 2,
+            "saved": 20,
+            "ig_reels_avg_watch_time": 14214,
+            "ig_reels_video_view_total_time": 23538813,
+            "reels_skip_rate": 52.2
+          },
+          "episodeId": "redis-cache-stampede-one-key-outage",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "ONE CACHE KEY → DATABASE OUTAGE 💀"
+        },
+        {
+          "id": "18100680269639569",
+          "title": "DB SUCCESS ✅ CLIENT TIMEOUT ❌ NOW WHAT?",
+          "publishedAt": "2026-10-24T14:35:31+0000",
+          "permalink": "https://www.instagram.com/reel/De4W8WipPn4/",
+          "product": "REELS",
+          "likes": 28,
+          "comments": 0,
+          "insights": {
+            "views": 1457,
+            "reach": 1224,
+            "total_interactions": 56,
+            "likes": 28,
+            "comments": 0,
+            "shares": 6,
+            "saved": 22,
+            "ig_reels_avg_watch_time": 18562,
+            "ig_reels_video_view_total_time": 22683684,
+            "reels_skip_rate": 48.6
+          },
+          "episodeId": "api-timeout-idempotency-interview-trap",
+          "titleHi": "Database SUCCESS… Client TIMEOUT — Request Fail हुआ या नहीं?",
+          "titleEn": "Database Says SUCCESS. Client Says TIMEOUT. Did the Request Fail?",
+          "topic": "Ambiguous failures, safe retries and idempotency keys",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "DB SUCCESS ✅ CLIENT TIMEOUT ❌ NOW WHAT?"
+        },
+        {
+          "id": "18112123052168082",
+          "title": "Why more servers can slow your database",
+          "publishedAt": "2026-10-17T11:17:11+0000",
+          "permalink": "https://www.instagram.com/reel/Del-t4jjHtA/",
+          "product": "REELS",
+          "likes": 16,
+          "comments": 0,
+          "insights": {
+            "views": 1316,
+            "reach": 1154,
+            "total_interactions": 45,
+            "likes": 16,
+            "comments": 0,
+            "shares": 6,
+            "saved": 22,
+            "ig_reels_avg_watch_time": 12537,
+            "ig_reels_video_view_total_time": 14618451,
+            "reels_skip_rate": 58.8
+          },
+          "episodeId": "database-scaling",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Why more servers can slow your database"
+        },
+        {
+          "id": "18107512538104305",
+          "title": "Day 1 of DSA from Zero to Interview Ready: understand Big O, O(1), O(n), O(n²), O(log n), and the difference between tim",
+          "publishedAt": "2026-10-15T16:23:01+0000",
+          "permalink": "https://www.instagram.com/reel/DehYEswpvfO/",
+          "product": "REELS",
+          "likes": 22,
+          "comments": 0,
+          "insights": {
+            "views": 683,
+            "reach": 581,
+            "total_interactions": 38,
+            "likes": 22,
+            "comments": 0,
+            "shares": 5,
+            "saved": 11,
+            "ig_reels_avg_watch_time": 11583,
+            "ig_reels_video_view_total_time": 7066065,
+            "reels_skip_rate": 57.9
+          },
+          "episodeId": null,
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Day 1 of DSA from Zero to Interview Ready: understand Big O, O(1), O(n), O(n²), O(log n), and the difference between tim"
+        },
+        {
+          "id": "17908078188575808",
+          "title": "What if 1000 requests only hit the DB once?",
+          "publishedAt": "2026-10-18T11:39:22+0000",
+          "permalink": "https://www.instagram.com/reel/DeomC3rAJyb/",
+          "product": "REELS",
+          "likes": 8,
+          "comments": 0,
+          "insights": {
+            "views": 496,
+            "reach": 434,
+            "total_interactions": 12,
+            "likes": 8,
+            "comments": 0,
+            "shares": 1,
+            "saved": 3,
+            "ig_reels_avg_watch_time": 10195,
+            "ig_reels_video_view_total_time": 4577688,
+            "reels_skip_rate": 59.2
+          },
+          "episodeId": "request-coalescing",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "What if 1000 requests only hit the DB once?"
+        },
+        {
+          "id": "17913965751558036",
+          "title": "Vertical scaling: more power, one machine",
+          "publishedAt": "2026-10-19T12:55:56+0000",
+          "permalink": "https://www.instagram.com/reel/DerTmkxDiHx/",
+          "product": "REELS",
+          "likes": 7,
+          "comments": 0,
+          "insights": {
+            "views": 415,
+            "reach": 371,
+            "total_interactions": 13,
+            "likes": 7,
+            "comments": 0,
+            "shares": 0,
+            "saved": 6,
+            "ig_reels_avg_watch_time": 9006,
+            "ig_reels_video_view_total_time": 3368469,
+            "reels_skip_rate": 54.6
+          },
+          "episodeId": "vertical-scaling",
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Vertical scaling: more power, one machine"
+        },
+        {
+          "id": "18088370723299256",
+          "title": "Sliding window: O(n²) to O(n)",
+          "publishedAt": "2026-10-20T12:49:52+0000",
+          "permalink": "https://www.instagram.com/reel/Det3tIrDuTT/",
+          "product": "REELS",
+          "likes": 8,
+          "comments": 0,
+          "insights": {
+            "views": 282,
+            "reach": 239,
+            "total_interactions": 14,
+            "likes": 8,
+            "comments": 0,
+            "shares": 1,
+            "saved": 5,
+            "ig_reels_avg_watch_time": 6689,
+            "ig_reels_video_view_total_time": 1679175,
+            "reels_skip_rate": 66.1
+          },
+          "episodeId": "sample-sliding-window",
+          "titleHi": "Sliding Window — O(n²) से O(n)",
+          "titleEn": "Sliding window: O(n²) to O(n)",
+          "topic": "Sliding window technique — O(n²) to O(n)",
+          "format": null,
+          "storyKind": "TECH_EDUCATION",
+          "platformTitle": "Sliding window: O(n²) to O(n)"
+        },
+        {
+          "id": "18081666116341945",
+          "title": "Great websites aren't just meant to be admired. They're meant to be explored, understood, and built upon.",
+          "publishedAt": "2026-10-24T07:02:48+0000",
+          "permalink": "https://www.instagram.com/p/De3jQPkILke/",
+          "product": "FEED",
+          "likes": 3,
+          "comments": 0,
+          "insights": null,
+          "episodeId": null,
+          "titleHi": null,
+          "titleEn": null,
+          "topic": null,
+          "format": null,
+          "storyKind": null,
+          "platformTitle": "Great websites aren't just meant to be admired. They're meant to be explored, understood, and built upon."
+        }
+      ]
+    }
+  }
+}

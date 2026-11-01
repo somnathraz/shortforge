@@ -1,0 +1,20 @@
+services:
+  wan-animate:
+    image: ${NIM_CONTAINER:-nvcr.io/nim/wan-ai/wan2.2-animate-2-14b:1.0.0}
+    container_name: wan-animate-2-nim
+    shm_size: 16gb
+    ports:
+      - "${NIM_HTTP_PORT:-8000}:8000"
+      - "${NIM_METRICS_PORT:-8002}:8002"
+    environment:
+      NGC_API_KEY: ${NGC_API_KEY:?Set NGC_API_KEY in .env.wan-nim}
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - ${NIM_CACHE_DIR:-/opt/wan-nim-cache}:/opt/nim/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

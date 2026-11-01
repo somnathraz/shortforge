@@ -1,0 +1,19 @@
+{
+  "_readme": "Not loaded (file name starts with _). Easiest: npm run pipeline:new -- --id my-channel --kind story. Or copy this to config/brands/<id>.json, set id to match the file name. Docs: docs/custom-pipelines.md",
+  "id": "my-channel",
+  "kind": "story",
+  "label": "My Channel",
+  "blurb": "One line shown on the pipeline picker",
+  "studioSubtitle": "Production studio",
+  "episodesDir": "data/episodes-my-channel",
+  "universeFile": "data/universes/my-channel.json",
+  "scriptBrief": "templates/episode-script-llm-brief.txt",
+  "visualBrand": "EPICASTRA_HERITAGE",
+  "defaultLanguage": "en",
+  "publishProfiles": ["youtube", "instagram", "facebook"],
+  "s3Prefix": "my-channel/",
+  "ctaDefault": "Follow My Channel for more.",
+  "emptyListCopy": "No episodes yet. Create your first short.",
+  "newEpisodeLabel": "Create a new short",
+  "theme": "heritage"
+}

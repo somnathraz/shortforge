@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "brandId": "tech-instagram",
+  "id": "api-timeout-idempotency-interview-trap",
+  "title": "Database says SUCCESS. Client says TIMEOUT.",
+  "accent": "#efc373",
+  "style": "orbital",
+  "voice": "TECH_ENGLISH_INDIA",
+  "lang": "en",
+  "sourceReview": {
+    "status": "NEEDS_REVIEW",
+    "learningGoal": "Show that a lost response is an unknown outcome, then teach stable idempotency keys, UNIQUE constraints, and atomic write of order plus idempotency result.",
+    "caveat": "Timeout does not prove the write succeeded either — it proves the client does not know. Numbers and order IDs are illustrative.",
+    "claims": [
+      {
+        "claim": "A client timeout or lost response does not necessarily mean a mutating operation failed.",
+        "sourceUrl": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
+      },
+      {
+        "claim": "Reusing the same idempotency key lets a server recognize retries of one logical operation.",
+        "sourceUrl": "https://stripe.com/docs/api/idempotent_requests"
+      },
+      {
+        "claim": "A unique constraint on an idempotency key prevents two concurrent claims of the same key.",
+        "sourceUrl": "https://www.postgresql.org/docs/current/ddl-constraints.html"
+      },
+      {
+        "claim": "Persisting the business write and idempotency record in one transaction closes the crash window between them.",
+        "sourceUrl": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "client",
+      "kind": "sphere",
+      "label": "CLIENT",
+      "x": 540,
+      "y": 520,
+      "color": "#b6bef2"
+    },
+    {
+      "id": "api",
+      "kind": "service",
+      "label": "API SERVER",
+      "x": 540,
+      "y": 820,
+      "color": "#f5c56b"
+    },
+    {
+      "id": "db",
+      "kind": "database",
+      "label": "DATABASE",
+      "x": 540,
+      "y": 1180,
+      "load": 0.15,
+      "color": "#8997cd"
+    },
+    {
+      "id": "keys",
+      "kind": "ring",
+      "label": "IDEMPOTENCY",
+      "x": 780,
+      "y": 1000,
+      "load": 0.1,
+      "opacity": 0,
+      "color": "#74d8b4"
+    }
+  ],
+  "beats": [
+    {
+      "id": "hook",
+      "chapter": "01 / INTERVIEW",
+      "headline": "DB SUCCESS.\nClient TIMEOUT.",
+      "subhead": "Fail… or only the response lost?",
+      "narration": "Database says SUCCESS. Client sees TIMEOUT. Ab batao — request fail hui... ya sirf response kho gaya?",
+      "durationSeconds": 6,
+      "nodes": {
+        "db": { "load": 0.55, "label": "COMMIT OK" },
+        "client": { "label": "TIMEOUT" },
+        "api": { "label": "RESPONSE LOST" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#8d9be8" },
+        { "from": "api", "to": "db", "packets": 3, "color": "#efc373" },
+        { "from": "db", "to": "client", "packets": 2, "color": "#ef777b", "bend": 70, "speed": 0.4 }
+      ],
+      "metric": {
+        "label": "OUTCOME",
+        "value": "Unknown to client"
+      }
+    },
+    {
+      "id": "timeout",
+      "chapter": "02 / THE BREAK",
+      "headline": "Commit done.\nWire cut.",
+      "subhead": "POST reaches DB. Response never returns.",
+      "narration": "Client POST order bhejta hai. Server order insert karta hai. Database COMMIT successful. But response client tak pahunchne se pehle connection break ho gaya.",
+      "durationSeconds": 8,
+      "nodes": {
+        "api": { "label": "POST /orders" },
+        "db": { "load": 0.7, "label": "ORDER 501" },
+        "client": { "label": "WAITING…" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 4, "color": "#8d9be8" },
+        { "from": "api", "to": "db", "packets": 4, "color": "#efc373" },
+        { "from": "db", "to": "api", "packets": 2, "color": "#74d8b4" },
+        { "from": "api", "to": "client", "packets": 2, "color": "#ef777b", "speed": 0.35 }
+      ],
+      "metric": {
+        "label": "CLIENT",
+        "value": "TIMEOUT · wire cut"
+      }
+    },
+    {
+      "id": "naive",
+      "chapter": "03 / NAIVE RETRY",
+      "headline": "One click.\nTwo orders.",
+      "subhead": "Retry without a key duplicates the write.",
+      "narration": "Client ko lagta hai request fail hui, so woh retry karta hai. Naive server same INSERT dobara chala deta hai. Ab ek click se do orders ban gaye.",
+      "durationSeconds": 8,
+      "nodes": {
+        "client": { "label": "RETRY" },
+        "api": { "label": "INSERT AGAIN" },
+        "db": { "load": 0.9, "label": "501 + 502" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 5, "color": "#ef777b" },
+        { "from": "api", "to": "db", "packets": 6, "color": "#ef777b" }
+      ],
+      "metric": {
+        "label": "BUG",
+        "value": "1 action · 2 orders"
+      }
+    },
+    {
+      "id": "insight",
+      "chapter": "04 / INSIGHT",
+      "headline": "Timeout ≠ fail.\nUnknown.",
+      "subhead": "Mint one stable key before the first POST.",
+      "narration": "Yahi key insight hai: timeout ka matlab operation fail nahi. Matlab client ko outcome pata nahi. Isliye first request se pehle ek stable idempotency key banao.",
+      "durationSeconds": 8,
+      "nodes": {
+        "client": { "label": "KEY order_7F3", "color": "#74d8b4" },
+        "keys": { "opacity": 1, "label": "STABLE KEY" },
+        "api": { "label": "API SERVER" },
+        "db": { "load": 0.25, "label": "DATABASE" }
+      },
+      "flows": [
+        { "from": "client", "to": "keys", "packets": 2, "color": "#74d8b4" },
+        { "from": "keys", "to": "api", "packets": 2, "color": "#efc373" }
+      ],
+      "metric": {
+        "label": "RULE",
+        "value": "Timeout = unknown"
+      }
+    },
+    {
+      "id": "reuse",
+      "chapter": "05 / SAME KEY",
+      "headline": "Lost response?\nRetry same key.",
+      "subhead": "Server returns the stored result. No second order.",
+      "narration": "Server key ke saath operation process karta hai aur result store karta hai. Response lost ho jaye? Retry mein SAME key bhejo. Server old result return karega — second order nahi banega.",
+      "durationSeconds": 9,
+      "nodes": {
+        "client": { "label": "RETRY · SAME KEY" },
+        "keys": { "opacity": 1, "load": 0.5, "label": "order_7F3" },
+        "api": { "label": "LOOKUP RESULT", "color": "#74d8b4" },
+        "db": { "load": 0.35, "label": "ORDER 501" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#8d9be8" },
+        { "from": "api", "to": "keys", "packets": 3, "color": "#efc373" },
+        { "from": "keys", "to": "db", "packets": 2, "color": "#74d8b4" },
+        { "from": "db", "to": "client", "packets": 3, "color": "#74d8b4", "bend": 60 }
+      ],
+      "metric": {
+        "label": "RESULT",
+        "value": "Reuse Order 501"
+      }
+    },
+    {
+      "id": "race",
+      "chapter": "06 / TRAP",
+      "headline": "Two retries.\nSame instant.",
+      "subhead": "Check-then-insert is not enough.",
+      "narration": "Interviewer ka next trap: same key ke do retries exact same time aaye to? Pehle check, phir insert karna enough nahi. Dono check pass kar sakte hain.",
+      "durationSeconds": 8,
+      "nodes": {
+        "client": { "label": "RETRY A + B" },
+        "api": { "label": "EXISTS? BOTH NO" },
+        "keys": { "opacity": 1, "load": 0.2, "label": "RACE" },
+        "db": { "load": 0.6, "label": "DANGER ZONE" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 6, "color": "#ef777b" },
+        { "from": "api", "to": "keys", "packets": 6, "color": "#ef777b" },
+        { "from": "keys", "to": "db", "packets": 4, "color": "#ef777b", "speed": 0.5 }
+      ],
+      "metric": {
+        "label": "RACE",
+        "value": "Both pass EXISTS"
+      }
+    },
+    {
+      "id": "unique",
+      "chapter": "07 / FIX",
+      "headline": "UNIQUE key.\nOne transaction.",
+      "subhead": "One wins. Duplicate reuses the result.",
+      "narration": "Database par idempotency key UNIQUE rakho. Aur order plus idempotency result ko same transaction mein save karo. One request wins; duplicate same result reuse karega.",
+      "durationSeconds": 8,
+      "nodes": {
+        "keys": { "opacity": 1, "load": 0.55, "label": "UNIQUE KEY" },
+        "api": { "label": "SAME TX", "color": "#74d8b4" },
+        "db": { "load": 0.3, "label": "ORDER 501" },
+        "client": { "label": "CLIENT" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 4, "color": "#8d9be8" },
+        { "from": "api", "to": "keys", "packets": 2, "color": "#efc373" },
+        { "from": "api", "to": "db", "packets": 2, "color": "#74d8b4" },
+        { "from": "db", "to": "client", "packets": 2, "color": "#74d8b4", "bend": 50 }
+      ],
+      "metric": {
+        "label": "GUARD",
+        "value": "UNIQUE + same TX"
+      }
+    },
+    {
+      "id": "rule",
+      "chapter": "08 / INTERVIEW RULE",
+      "headline": "Unknown outcome.\nSame key.",
+      "subhead": "Retry only when the side effect cannot duplicate.",
+      "narration": "Interview rule: timeout means unknown outcome. Retry safe tabhi hai jab same logical operation same key reuse kare — aur side effect duplicate na ho.",
+      "durationSeconds": 7,
+      "nodes": {
+        "client": { "label": "SAME OP + KEY", "color": "#74d8b4" },
+        "keys": { "opacity": 1, "load": 0.4, "label": "IDEMPOTENT" },
+        "api": { "label": "SAFE RETRY" },
+        "db": { "load": 0.2, "label": "ONE ORDER" }
+      },
+      "flows": [
+        { "from": "client", "to": "api", "packets": 3, "color": "#8d9be8" },
+        { "from": "api", "to": "keys", "packets": 2, "color": "#efc373" },
+        { "from": "keys", "to": "db", "packets": 2, "color": "#74d8b4" },
+        { "from": "db", "to": "client", "packets": 3, "color": "#74d8b4", "bend": 55 }
+      ],
+      "metric": {
+        "label": "SENIOR RULE",
+        "value": "Make retries idempotent"
+      }
+    }
+  ]
+}
