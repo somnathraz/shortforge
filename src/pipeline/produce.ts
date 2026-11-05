@@ -3,7 +3,7 @@ import { estimateRunwayCostUsd, runwayClipSeconds } from '../providers/runway.js
 import path from 'node:path';
 import type { Episode } from '../schema/episode.js';
 import { visualSource, lastImageSceneId, type SceneVisuals } from '../lib/sceneVisualPlan.js';
-import { resolveSpokenHook } from '../lib/ttsScript.js';
+import { payoffIsSpoken, resolveSpokenHook } from '../lib/ttsScript.js';
 import { imagesRootDir } from '../lib/sceneImage.js';
 import { enrichVisualPrompt } from '../lib/characters.js';
 import { sceneMotionNegativePrompt, sceneMotionPrompt } from '../lib/sceneMotionPrompt.js';
@@ -346,7 +346,7 @@ export async function produceEpisode(input: ProduceInput): Promise<{
   }
   for (const id of [0, -1]) {
     if (id === 0 && !resolveSpokenHook(input.episode)) continue;
-    if (id === -1 && !input.episode.ending.payoffHi.trim()) continue;
+    if (id === -1 && !payoffIsSpoken(input.episode)) continue;
     const settings = input.sceneVisuals?.[id];
     const clip = input.selectedClips?.[id];
     // Prefer a locked clip whenever present — don't require sceneVisuals.source=ai

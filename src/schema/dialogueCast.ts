@@ -28,7 +28,7 @@ export const DialogueVoiceProfileSchema = z.object({
   role: z.string().trim().min(1).max(120),
   /** ElevenLabs voice id — replace placeholders before dual-voice export. */
   voiceId: z.string().trim().min(1).max(80),
-  note: z.string().trim().min(1).max(240).optional()
+  note: z.string().trim().min(1).max(400).optional()
 });
 
 export const EpisodeVoicesSchema = z

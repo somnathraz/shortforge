@@ -1,4 +1,4 @@
-# EpicAstra audio library
+# Audio library
 
 > **Audio files are not included in this repository.** The SFX and BGM beds come from
 > [Mixkit](https://mixkit.co/license/) and [Pixabay](https://pixabay.com/service/license-summary/),

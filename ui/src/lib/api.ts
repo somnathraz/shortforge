@@ -95,6 +95,16 @@ export function listPipelines(): Promise<{
   return request('/api/pipelines');
 }
 
+export function createPipeline(input: {
+  id: string;
+  kind: 'story' | 'tech';
+  label?: string;
+  language?: 'hi' | 'en';
+  cta?: string;
+}): Promise<{ pipeline: PipelineInfo }> {
+  return request('/api/pipelines', { method: 'POST', body: JSON.stringify(input) });
+}
+
 export function listEpisodes(): Promise<{ episodes: EpisodeSummary[] }> {
   return request('/api/episodes');
 }
@@ -957,10 +967,10 @@ export function saveTechSeries(series: TechSeries): Promise<{ series: TechSeries
 }
 
 export type McpClientSetup = {
-  id: 'claude-code' | 'claude-desktop' | 'cursor' | 'other';
+  id: 'claude-code' | 'claude-desktop' | 'cursor' | 'codex' | 'chatgpt' | 'other';
   label: string;
   location: string;
-  kind: 'command' | 'json';
+  kind: 'command' | 'json' | 'toml';
   text: string;
   steps: string[];
 };

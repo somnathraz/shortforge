@@ -58,3 +58,23 @@ variables (`YOUTUBE_REFRESH_TOKEN`, `INSTAGRAM_ACCESS_TOKEN`, …) only apply to
 
 Every MCP tool takes `brand`; `list_brands` returns the configured pipelines, so Claude can work on
 any of them.
+
+## Episode JSON field names
+
+Scripts (yours, or from an LLM) use generic names. The Desk's *Script template* and *LLM prompt* already
+write them, and import also accepts the older stored names, so existing files keep working.
+
+| You write | Stored as |
+|---|---|
+| `title` | `titleHi` (title in the narration language) |
+| `titleEnglish` | `titleEn` |
+| `hook` | `hookHi` (on-screen hook text) |
+| `characters[]` with `name`, `nameLocal` | `featuredLords[]` with `nameEn`, `nameHi` |
+| `hookAppearingCharacters` | `hookAppearingLords` |
+| `scenes[].narration` | `scenes[].narrationHi` |
+| `scenes[].appearingCharacters` | `scenes[].appearingLords` |
+| `scenes[].voiceSegments[].text` | `scenes[].voiceSegments[].textHi` |
+| `ending.payoff`, `nextEpisodeTease`, `onScreenClosingText` | `...Hi` |
+| `metadata.description`, `metadata.thumbnailText` | `...Hi` |
+
+The narration language is the pipeline's `defaultLanguage`; the `Hi` in a stored name is historical.

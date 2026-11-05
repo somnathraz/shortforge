@@ -53,9 +53,15 @@ export const AudioPlanCoreSchema = z.object({
  * or SoundDirectorLlmSchema instead (optional keys break strict mode).
  */
 export const AudioPlanSchema = AudioPlanCoreSchema.extend({
+  /** Disk plans may carry a longer cue list than the 8-cue LLM core. */
+  sfx: z.array(SfxCueSchema).min(1).max(12),
   /** How cue times were derived. */
-  timingSource: z.enum(['scene-planned', 'narration-aligned']).optional(),
-  narrationDurationSeconds: z.number().positive().optional(),
+  timingSource: z
+    .enum(['scene-planned', 'narration-aligned', 'scene-planned-awaiting-elevenlabs-waveform'])
+    .optional(),
+  narrationDurationSeconds: z.number().positive().nullable().optional(),
+  /** Planned picture length before real TTS is measured. */
+  estimatedTimelineSeconds: z.number().positive().optional(),
   /** Absolute path or basename of BGM track chosen at mix time. */
   bgmTrack: z.string().optional(),
   /** True when episode used paid ElevenLabs Music (hero Reel). */

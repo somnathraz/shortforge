@@ -12,6 +12,7 @@ import { EpisodeSchema, type Episode } from '../schema/episode.js';
 import { slugify } from '../utils/slug.js';
 import { assertUniqueEpisodeId, nextUniqueEpisodeId, resolveEpisodeId } from '../lib/episodeIdentity.js';
 import { brandEpisodesDir, currentBrandId, type BrandId } from '../lib/brands.js';
+import { applyGenericEpisodeKeys } from '../lib/episodeAliases.js';
 import { normalizeDialogueEpisodeForProduction } from '../lib/dialogueEpisode.js';
 
 export type ImportEpisodeResult = {
@@ -54,10 +55,11 @@ export async function importEpisodeJson(
   const budget = await loadBudget();
   const brandId = options.brandId || currentBrandId();
 
+  const aliased = applyGenericEpisodeKeys(raw);
   const prepared =
-    raw && typeof raw === 'object'
-      ? normalizeDialogueEpisodeForProduction(raw as Record<string, unknown>)
-      : raw;
+    aliased && typeof aliased === 'object'
+      ? normalizeDialogueEpisodeForProduction(aliased as Record<string, unknown>)
+      : aliased;
   let episode = EpisodeSchema.parse(prepared);
   if (!episode.brandId) {
     episode = { ...episode, brandId };

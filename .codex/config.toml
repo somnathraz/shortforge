@@ -1,0 +1,8 @@
+# Read by Codex desktop, Codex CLI, and the Codex IDE extension
+# when this folder is a trusted project. Same server as .mcp.json.
+[mcp_servers.mythology-factory]
+command = "npm"
+args = ["run", "-s", "mcp"]
+startup_timeout_sec = 30
+tool_timeout_sec = 600
+default_tools_approval_mode = "prompt"

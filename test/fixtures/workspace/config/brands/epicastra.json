@@ -1,0 +1,22 @@
+{
+  "id": "epicastra",
+  "kind": "story",
+  "label": "Fixture Story",
+  "blurb": "Test fixture pipeline (story engine)",
+  "studioSubtitle": "Fixture studio",
+  "episodesDir": "data/episodes",
+  "universeFile": "data/universes/channel.json",
+  "scriptBrief": "templates/episode-script-llm-brief.txt",
+  "visualBrand": "EPICASTRA_HERITAGE",
+  "defaultLanguage": "hi",
+  "publishProfiles": [
+    "youtube",
+    "instagram",
+    "facebook"
+  ],
+  "s3Prefix": "fixture-story/",
+  "ctaDefault": "Follow for more.",
+  "emptyListCopy": "No episodes yet.",
+  "newEpisodeLabel": "Create a new short",
+  "theme": "heritage"
+}

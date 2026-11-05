@@ -1,10 +1,11 @@
 import { readFileSync } from 'node:fs';
+import { defaultTechBrandId } from './brands.js';
 import { TechReelAuthoringSchema } from '../schema/techReel.js';
 import { TECH_REEL_ELEMENTS } from '../visual/techReelElements.js';
 import { formatTechReelTemplateCatalog } from '../visual/techReelTemplates.js';
 
 /** Single sample/contract shared by UI downloads, copied prompts, and validation tests. */
-export function buildTechReelScriptBundle(topic = '{{TOPIC}}', brandId = 'tech-instagram') {
+export function buildTechReelScriptBundle(topic = '{{TOPIC}}', brandId: string = defaultTechBrandId()) {
   const template = TechReelAuthoringSchema.parse(JSON.parse(readFileSync(new URL('../../templates/tech-reel-sample.json', import.meta.url), 'utf8')));
   const contract = readFileSync(new URL('../../templates/tech-instagram-script-llm-brief.txt', import.meta.url), 'utf8');
   return {

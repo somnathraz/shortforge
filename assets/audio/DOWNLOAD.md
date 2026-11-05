@@ -1,4 +1,4 @@
-# EpicAstra — download checklist (one-time)
+# Audio library — download checklist (one-time)
 
 > **Audio files are not included in this repository.** The SFX and BGM beds come from
 > [Mixkit](https://mixkit.co/license/) and [Pixabay](https://pixabay.com/service/license-summary/),
@@ -37,7 +37,7 @@ npm run audio:mix -- --episode <id> --elevenlabs-sfx
 
 Sources: **Pixabay** (primary) + **Mixkit** (backup).  
 Prefer tracks **without YouTube Content ID** on Pixabay.  
-Do **not** use Freesound API for commercial EpicAstra.
+Do **not** use Freesound API for commercial use.
 
 Formats: `.wav` or `.mp3` OK (engine accepts both for BGM; SFX prefer `.wav`).
 

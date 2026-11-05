@@ -56,6 +56,8 @@ type PipelineContextValue = {
   remember: boolean;
   setRemember: (value: boolean) => void;
   choosePipeline: (id: PipelineId) => void;
+  /** Register a just-created pipeline (from the server) and switch to it. */
+  addPipeline: (info: PipelineInfo) => void;
   switchPipeline: (id: PipelineId) => void;
   readSelectedEpisode: () => string | null;
   storeSelectedEpisode: (file: string | null) => void;
@@ -75,7 +77,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [pipelines, setPipelines] = useState<PipelineInfo[]>([]);
   const [pipelineId, setPipelineId] = useState<PipelineId>(() => readStoredPipeline() || '');
-  const [defaultPipelineId, setDefaultPipelineId] = useState<PipelineId>('epicastra');
+  const [defaultPipelineId, setDefaultPipelineId] = useState<PipelineId>('');
   const [needsGate, setNeedsGate] = useState(() => !readStoredPipeline());
   const [remember, setRememberState] = useState(readRemember);
 
@@ -102,34 +104,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
         }
       } catch {
         if (!cancelled) {
-          setPipelines([
-            {
-              id: 'epicastra',
-              kind: 'story',
-              label: 'EpicAstra',
-              blurb: 'Cinematic mythology Shorts',
-              studioSubtitle: 'Mythology production studio',
-              defaultLanguage: 'hi',
-              publishProfiles: ['youtube', 'instagram', 'facebook'],
-              visualBrand: 'EPICASTRA_HERITAGE',
-              emptyListCopy: 'No episodes yet.',
-              newEpisodeLabel: 'Create a new short',
-              theme: 'heritage'
-            },
-            {
-              id: 'tech-instagram',
-              kind: 'tech',
-              label: 'Tech Reels',
-              blurb: 'DSA, system design, app building',
-              studioSubtitle: 'Tech education studio',
-              defaultLanguage: 'en',
-              publishProfiles: ['youtube', 'instagram', 'facebook'],
-              visualBrand: 'TECH_EDITORIAL',
-              emptyListCopy: 'No tech Reels yet.',
-              newEpisodeLabel: 'Create a new Reel',
-              theme: 'tech'
-            }
-          ]);
+          setPipelines([]);
         }
       } finally {
         if (!cancelled) setReady(true);
@@ -179,6 +154,14 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       }
     },
     [remember]
+  );
+
+  const addPipeline = useCallback(
+    (info: PipelineInfo) => {
+      setPipelines((current) => (current.some((p) => p.id === info.id) ? current : [...current, info]));
+      choosePipeline(info.id);
+    },
+    [choosePipeline]
   );
 
   const switchPipeline = useCallback(
@@ -242,6 +225,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
     remember,
     setRemember,
     choosePipeline,
+    addPipeline,
     switchPipeline,
     readSelectedEpisode,
     storeSelectedEpisode,

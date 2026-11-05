@@ -2,7 +2,7 @@
  * Multi-pipeline brand registry + request-scoped active pipeline.
  */
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
@@ -21,8 +21,12 @@ export type BrandId = string;
 export type BrandKind = 'story' | 'tech';
 export const BRAND_KINDS: readonly BrandKind[] = ['story', 'tech'];
 
-/** First-party pipeline ids; also the owners of legacy single-account `.env` credentials. */
-export const LEGACY_ENV_BRAND_ID = 'epicastra';
+/**
+ * Owner of legacy single-account `.env` credentials (YOUTUBE_REFRESH_TOKEN, INSTAGRAM_*, ...).
+ * Resolved from LEGACY_ENV_BRAND, else a pipeline named `epicastra` if present, else the first
+ * pipeline; empty string when there are no pipelines yet. Re-resolved by reloadBrands().
+ */
+export let LEGACY_ENV_BRAND_ID: string = 'epicastra';
 
 /** Synthetic owner for local Desk (P1) until multi-user sessions land. */
 export const LOCAL_OPERATOR_USER_ID = 'local-operator';
@@ -101,6 +105,7 @@ function loadBrandFile(id: BrandId): BrandConfig {
 function discoverBrands(): Record<BrandId, BrandConfig> {
   const dir = path.join(ROOT, 'config', 'brands');
   const found: Record<BrandId, BrandConfig> = {};
+  if (!existsSync(dir)) return found;
   for (const file of readdirSync(dir).sort()) {
     if (!file.endsWith('.json') || file.startsWith('_')) continue;
     const id = file.slice(0, -'.json'.length);
@@ -109,20 +114,55 @@ function discoverBrands(): Record<BrandId, BrandConfig> {
     }
     found[id] = loadBrandFile(id);
   }
-  if (!Object.keys(found).length) throw new Error('No pipelines found in config/brands/*.json');
   return found;
 }
 
-const brands = discoverBrands();
+let brands = discoverBrands();
 
-/** Every configured pipeline id, in file-name order. */
-export const BRAND_IDS: readonly BrandId[] = Object.keys(brands);
+/** Every configured pipeline id, in file-name order. Mutated in place by reloadBrands(). */
+export const BRAND_IDS: BrandId[] = Object.keys(brands);
 
-/** Pipeline used when a request names none (DEFAULT_BRAND, else epicastra, else the first one). */
-export const DEFAULT_BRAND_ID: BrandId =
-  [process.env.DEFAULT_BRAND?.trim().toLowerCase(), LEGACY_ENV_BRAND_ID, BRAND_IDS[0]].find(
-    (id): id is string => Boolean(id && id in brands)
-  ) as string;
+function pickBrand(candidates: (string | undefined)[]): string {
+  return candidates.find((id): id is string => Boolean(id && id in brands)) ?? '';
+}
+
+/**
+ * Pipeline used when a request names none (DEFAULT_BRAND, else epicastra, else the first one).
+ * Empty string on a fresh install that has no pipelines yet; the Desk then shows onboarding.
+ */
+export let DEFAULT_BRAND_ID: BrandId = pickBrand([
+  process.env.DEFAULT_BRAND?.trim().toLowerCase(),
+  'epicastra',
+  BRAND_IDS[0]
+]);
+LEGACY_ENV_BRAND_ID = pickBrand([
+  process.env.LEGACY_ENV_BRAND?.trim().toLowerCase(),
+  'epicastra',
+  BRAND_IDS[0]
+]);
+
+/** Re-read config/brands/*.json (used after a pipeline is created while the Desk is running). */
+export function reloadBrands(): void {
+  brands = discoverBrands();
+  BRAND_IDS.splice(0, BRAND_IDS.length, ...Object.keys(brands));
+  DEFAULT_BRAND_ID = pickBrand([process.env.DEFAULT_BRAND?.trim().toLowerCase(), 'epicastra', BRAND_IDS[0]]);
+  LEGACY_ENV_BRAND_ID = pickBrand([process.env.LEGACY_ENV_BRAND?.trim().toLowerCase(), 'epicastra', BRAND_IDS[0]]);
+}
+
+/** Tech pipeline to use when a caller names none (first tech pipeline, else a neutral placeholder id). */
+export function defaultTechBrandId(): BrandId {
+  return firstBrandOfKind('tech') ?? 'my-tech';
+}
+
+/** True until the first pipeline exists. */
+export function hasNoPipelines(): boolean {
+  return BRAND_IDS.length === 0;
+}
+
+/** First pipeline of an engine kind, for defaults that used to hardcode `tech-instagram`. */
+export function firstBrandOfKind(kind: BrandKind): BrandId | undefined {
+  return BRAND_IDS.find((id) => brands[id]!.kind === kind);
+}
 
 export function isBrandId(value: unknown): value is BrandId {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(brands, value);
@@ -143,7 +183,13 @@ export function listBrands(): BrandConfig[] {
 
 export function getBrand(id: BrandId): BrandConfig {
   const brand = brands[id];
-  if (!brand) throw new Error(`Unknown pipeline "${id}". Configured: ${BRAND_IDS.join(', ')}`);
+  if (!brand) {
+    throw new Error(
+      BRAND_IDS.length
+        ? `Unknown pipeline "${id}". Configured: ${BRAND_IDS.join(', ')}`
+        : 'No pipelines yet. Create one in the Desk, or run: npm run pipeline:new -- --id my-channel --kind story'
+    );
+  }
   return brand;
 }
 

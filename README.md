@@ -7,8 +7,9 @@ browser and an **MCP server so Claude can run the whole thing for you**.
 You bring your own API keys. Nothing is uploaded anywhere except to the providers you choose.
 It is faceless-video focused: stills + narration + motion, no people on camera.
 
-Ships with two example pipelines: **EpicAstra** (Indian mythology Shorts) and **Tech Reels**
-(one-concept tech explainers). You can [add your own channel](#make-your-own-pipeline) without writing code.
+Starts empty: no channels, no sample content. On first run the Desk asks you to create your first
+**pipeline** (one channel): either *Story Shorts* (narrated, generated stills or video) or *Tech Reels*
+(one-concept animated explainers). You can [add more channels](#make-your-own-pipeline) any time, without code.
 
 ---
 
@@ -42,7 +43,7 @@ npm run ui                    # → http://127.0.0.1:8787
 
 1. **Sign in.** On first start the terminal prints a one-time Desk password — use any email plus that
    password. To pick your own: `npm run desk:password -- 'your password'` and paste the hash into `.env`.
-2. **Pick a pipeline** (EpicAstra or Tech Reels).
+2. **Create your first pipeline** (a name plus Story Shorts or Tech Reels), then enter it. Later you just pick one.
 3. **Script** — type a topic and generate, or paste JSON (*Import script*) from Claude/ChatGPT. Review the
    claims, then approve the script.
 4. **Voice** — generate narration (free Edge TTS works without a key), pick one, approve.
@@ -55,7 +56,8 @@ Every step is a gate: nothing downstream runs until you approve the previous one
 ## Make your own pipeline
 
 A pipeline is one channel/account — its own language, voice, call-to-action, episode folder and publishing
-accounts. It is a config file, not code.
+accounts. It is a config file, not code. Create it in the Desk (first-run screen or **New pipeline**), ask
+Claude through the MCP `create_pipeline` tool, or use the command line:
 
 ```bash
 npm run pipeline:new -- --id my-channel --kind story --label "My Channel" --language en
@@ -64,7 +66,7 @@ npm run pipeline:new -- --id my-channel --kind story --label "My Channel" --lang
 1. Pick a **kind**: `story` (narrated cinematic Shorts) or `tech` (one-concept explainer reels).
 2. Edit `config/brands/my-channel.json` (blurb, call-to-action, which platforms) and
    `data/universes/my-channel.json` (your channel's positioning and editorial rules).
-3. Restart `npm run ui` and choose **My Channel** in the Desk.
+3. Choose **My Channel** in the Desk (restart `npm run ui` only if you created it by hand).
 4. Connect its accounts: `npm run publish:youtube-auth -- --brand my-channel` and
    `npm run publish:instagram-auth -- --brand my-channel`.
 
@@ -74,7 +76,7 @@ Each pipeline keeps separate episodes and separate tokens. Details, every config
 ## Let Claude run it
 
 The studio includes an [MCP](https://modelcontextprotocol.io) server. Open the Desk and press
-**Connect AI** — it shows the exact setup for Claude Code, Claude Desktop and Cursor and has a test button.
+**Connect AI** — it shows the exact setup for Claude Code, Claude Desktop, Cursor and ChatGPT and has a test button.
 Claude Code also picks up the project's `.mcp.json` automatically when you open this folder.
 
 Then you can say things like *"write a 45-second script about the Pushpaka Vimana and save it as a draft"*,

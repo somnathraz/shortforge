@@ -29,7 +29,7 @@
     "wan:tunnel:comfy": "bash scripts/gpu/mac-tunnel-comfy.sh",
     "wan:remote:start": "bash scripts/gpu/remote-start-wan.sh",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test test/**/*.test.ts",
+    "test": "node scripts/test.mjs",
     "check": "npm run typecheck && npm --prefix ui run typecheck && npm test",
     "tts:free": "node --import tsx src/cli/edge-tts.ts",
     "tts:edge": "node --import tsx src/cli/edge-tts.ts",

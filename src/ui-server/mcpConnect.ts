@@ -10,11 +10,11 @@ import { ROOT } from './paths.js';
 export const MCP_SERVER_NAME = 'mythology-factory';
 
 export type McpClientSetup = {
-  id: 'claude-code' | 'claude-desktop' | 'cursor' | 'other';
+  id: 'claude-code' | 'claude-desktop' | 'cursor' | 'codex' | 'chatgpt' | 'other';
   label: string;
   /** Where the snippet goes (or "terminal"). */
   location: string;
-  kind: 'command' | 'json';
+  kind: 'command' | 'json' | 'toml';
   text: string;
   steps: string[];
 };
@@ -32,13 +32,27 @@ function launcher(): { command: string; args: string[] } {
   }
   return {
     command: '/bin/sh',
-    args: ['-c', `cd "${ROOT}" && "${node}" --import tsx src/mcp/server.ts`]
+    args: ['-c', `cd ${shellQuote(ROOT)} && ${shellQuote(node)} --import tsx src/mcp/server.ts`]
   };
 }
 
 function jsonConfig(): string {
   const { command, args } = launcher();
   return JSON.stringify({ mcpServers: { [MCP_SERVER_NAME]: { command, args } } }, null, 2);
+}
+
+/** Absolute launcher for Codex desktop, CLI and IDE extension. */
+function codexToml(): string {
+  const { command, args } = launcher();
+  const argList = args.map((arg) => JSON.stringify(arg)).join(', ');
+  return [
+    `[mcp_servers.${MCP_SERVER_NAME}]`,
+    `command = ${JSON.stringify(command)}`,
+    `args = [${argList}]`,
+    'startup_timeout_sec = 30',
+    'tool_timeout_sec = 600',
+    'default_tools_approval_mode = "prompt"'
+  ].join('\n');
 }
 
 function shellQuote(value: string): string {
@@ -77,7 +91,7 @@ export function mcpClientSetups(): McpClientSetup[] {
       steps: [
         'Claude Desktop → Settings → Developer → Edit Config.',
         'Merge this into the file (keep any servers you already have).',
-        'Quit and reopen Claude Desktop; the tools appear under the plug icon in the chat box.'
+        'Quit and reopen Claude Desktop. Check Local MCP servers in Extensions (or Settings → Developer in older versions), then select the connector in chat.'
       ]
     },
     {
@@ -89,6 +103,39 @@ export function mcpClientSetups(): McpClientSetup[] {
       steps: [
         'Cursor → Settings → MCP → Add new MCP server (or edit the file).',
         'Paste this, save, and switch the server on.'
+      ]
+    },
+    {
+      id: 'codex',
+      label: 'Codex / ChatGPT desktop',
+      location: path.join(home, '.codex/config.toml'),
+      kind: 'toml',
+      text: codexToml(),
+      steps: [
+        'Codex desktop, CLI and the Codex IDE extension use this config.',
+        'Merge the block into the file shown below, keeping your other servers.',
+        'Restart the MCP connection in Codex and check that mythology-factory exposes tools.',
+        'The ChatGPT desktop build using the Codex runtime uses this local config. ChatGPT web has a separate setup in the ChatGPT web tab.'
+      ]
+    },
+    {
+      id: 'chatgpt',
+      label: 'ChatGPT web',
+      location: 'https://chatgpt.com/plugins',
+      kind: 'command',
+      text: [
+        'tunnel-client init --sample sample_mcp_stdio_local --profile mythology-factory \\',
+        '  --tunnel-id <your-tunnel-id> \\',
+        `  --mcp-command ${shellQuote([command, ...args].map(shellQuote).join(' '))}`,
+        'tunnel-client doctor --profile mythology-factory --explain',
+        'tunnel-client run --profile mythology-factory'
+      ].join('\n'),
+      steps: [
+        'ChatGPT does not read .codex/config.toml or start this local stdio server directly.',
+        'Follow https://developers.openai.com/api/docs/guides/secure-mcp-tunnels to install the official tunnel-client and create a tunnel associated with your ChatGPT workspace.',
+        'Set CONTROL_PLANE_API_KEY securely in your terminal, replace <your-tunnel-id> below, and keep tunnel-client running.',
+        'In ChatGPT on the web, open Plugins → Add custom MCP server → Connection: Tunnel. Select the same tunnel, configure authentication, then create and install the plugin.',
+        'In a new chat, select the plugin with @ and ask it to list your pipelines. Available options depend on your workspace permissions.'
       ]
     },
     {
@@ -167,7 +214,11 @@ export function testMcpServer(timeoutMs = 25_000): Promise<{ ok: boolean; tools:
         buffer = buffer.slice(newline + 1);
         if (!line) continue;
         try {
-          const message = JSON.parse(line) as { id?: number; result?: { tools?: McpTool[] } };
+          const message = JSON.parse(line) as { id?: number; result?: { tools?: McpTool[] }; error?: { message?: string } };
+          if (message.error) {
+            finish({ ok: false, tools: [], error: message.error.message || 'MCP protocol error' });
+            return;
+          }
           if (message.id === 1) {
             send({ jsonrpc: '2.0', method: 'notifications/initialized' });
             send({ jsonrpc: '2.0', id: 2, method: 'tools/list' });

@@ -1,8 +1,10 @@
+import { defaultTechBrandId } from './brands.js';
+
 /**
  * Hand-authored / LLM sample template for tech-instagram pipeline.
  * Same EpisodeSchema as mythology — English text may live in *Hi fields.
  */
-export function techEpisodeScriptTemplate(brandId = 'tech-instagram'): Record<string, unknown> {
+export function techEpisodeScriptTemplate(brandId: string = defaultTechBrandId()): Record<string, unknown> {
   const hookSeconds = 5;
   const sceneSeconds = 5;
   const narrations = [
@@ -151,8 +153,8 @@ export const TECH_EPISODE_SCRIPT_FIELD_GUIDE = [
 ] as const;
 
 /** Ready-to-paste tech brief for external LLMs. */
-export function buildTechEpisodeScriptLlmPrompt(topicPlaceholder = '{{TOPIC}}', brandId = 'tech-instagram'): string {
-  const templateJson = JSON.stringify(techEpisodeScriptTemplate(), null, 2);
+export function buildTechEpisodeScriptLlmPrompt(topicPlaceholder = '{{TOPIC}}', brandId: string = defaultTechBrandId()): string {
+  const templateJson = JSON.stringify(techEpisodeScriptTemplate(brandId), null, 2);
   const guide = TECH_EPISODE_SCRIPT_FIELD_GUIDE.map(
     (item) => `- ${item.field}${item.required ? ' (required)' : ''}: ${item.note}`
   ).join('\n');

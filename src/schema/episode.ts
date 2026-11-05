@@ -152,8 +152,11 @@ export const EpisodeBaseObjectSchema = z.object({
    * Final Short still retimes to real TTS.
    */
   spokenHookDurationSeconds: z.number().positive().max(20).optional(),
-  /** Delivery hint for spokenHook TTS tone (legacy / fallback when spokenHook is a string). */
-  hookDelivery: HookDeliverySchema.optional(),
+  /**
+   * Delivery hint for spokenHook TTS tone.
+   * Generated shorts use the enum; imported kathas may keep a short custom direction.
+   */
+  hookDelivery: z.union([HookDeliverySchema, z.string().trim().min(1).max(160)]).optional(),
   /** Optional structured hook dialogue (A/B). Prefer this over embedding labels in spokenHook. */
   hookDialogueLines: z.array(DialogueLineSchema).min(1).max(6).optional(),
   /**
@@ -190,19 +193,25 @@ export const EpisodeBaseObjectSchema = z.object({
    * Picture plan (hook + scenes). Shorts: 25–60s. Long-form katha masters may go higher
    * (import/TTS); story LLM generation still targets Short budgets via EpisodeGenerationSchema.
    */
-  targetDurationSeconds: z.number().int().min(25).max(600),
+  /** Whole seconds for generated Shorts; imported kathas may use one-decimal picture plans. */
+  targetDurationSeconds: z.number().min(25).max(600),
   audience: z.enum(['GENERAL_FAMILY', 'TEENS_ADULTS']),
   fictionDisclosureRequired: z.boolean(),
   sourceReview: z.object({
     status: z.enum(['NEEDS_REVIEW', 'FICTION']),
     claimsToVerify: z.array(z.string()),
-    notes: z.array(z.string())
+    notes: z.array(z.string()),
+    references: z.array(z.string().trim().min(1).max(300)).max(12).optional()
   }),
   /** Shorts: 5–8 scenes. Long-form connected katha may use more beats. */
   scenes: z.array(SceneSchema).min(5).max(48),
   ending: z.object({
     payoffHi: z.string().min(1),
     nextEpisodeTeaseHi: z.string().min(1),
+    /** False when the share ask already lives in the last scene and payoffHi must not be spoken again. */
+    payoffSpokenSeparately: z.boolean().optional(),
+    /** On-screen closing line (mantra). Not spoken unless it is also payoffHi. */
+    onScreenClosingTextHi: z.string().trim().min(1).max(80).optional(),
     teaseStartSecond: z.number().nonnegative().optional(),
     teaseDurationSeconds: z.number().positive().max(20).optional(),
     teaseVisualHold: z.string().trim().min(1).max(400).optional(),
@@ -493,6 +502,7 @@ export const EpisodeGenerationSchema = EpisodeBaseObjectSchema.omit({
     spokenHook: z.string().min(8),
     spokenHookDurationSeconds: z.number().positive().max(20),
     hookDelivery: HookDeliverySchema,
+    targetDurationSeconds: z.number().int().min(25).max(600),
     featuredLords: z.array(FeaturedLordSchema).min(1).max(8),
     scenes: z.array(SceneGenerationSchema).min(5).max(8)
   })
@@ -513,7 +523,14 @@ export const EpisodeSchema = EpisodeBaseObjectSchema.extend({
    * Still-image brand: one EpicAstra Heritage frame family for the whole episode.
    * Strong vs thin border weight is chosen per scene at image-generation time.
    */
-  visualStyle: VisualStyleSchema.optional()
+  visualStyle: VisualStyleSchema.optional(),
+  /** Hook still vs motion. Picture plan only; image gen still uses hookVisualPrompt. */
+  hookRenderMode: RenderModeSchema.optional(),
+  hookElevenLabsText: z.string().min(1).optional(),
+  hookVideoPrompt: z.string().min(1).optional(),
+  hookVideoNegativePrompt: z.string().min(1).optional(),
+  /** Author production notes (image reuse, motion beats). Not executed automatically. */
+  productionPlan: z.unknown().optional()
 }).superRefine(refineEpisode);
 
 export type Episode = z.infer<typeof EpisodeSchema>;

@@ -1,6 +1,7 @@
 import { MYTHOLOGY_VISUAL_INSTRUCTIONS, MYTHOLOGY_VISUAL_BRIEF } from './mythologyVisualBrief.js';
 import { buildTechReelScriptBundle } from './techReelScript.js';
 import { isTechBrand } from './brands.js';
+import { toGenericEpisodeKeys, toGenericEpisodeText } from './episodeAliases.js';
 /**
  * Canonical hand-authored script template for EpicAstra / mythology-factory.
  * Copy this JSON, fill your story, then import via UI or POST /api/episodes/import.
@@ -348,7 +349,7 @@ ${templateJson}
 export type ScriptBundleBrand = string;
 
 /** Brand-aware template + LLM brief for Desk download / import. */
-export function buildScriptBundle(
+function buildStoredScriptBundle(
   brandId: ScriptBundleBrand,
   topicPlaceholder = '{{TOPIC}}',
   format: 'default' | 'legacy' = 'default'
@@ -395,3 +396,27 @@ export function buildScriptBundle(
   };
 }
 
+
+/**
+ * Template + LLM brief for a pipeline, written with the generic field names
+ * (see episodeAliases.ts). Import accepts these and the older stored names.
+ */
+export function buildScriptBundle(
+  brandId: ScriptBundleBrand,
+  topicPlaceholder = '{{TOPIC}}',
+  format: 'default' | 'legacy' = 'default'
+): ReturnType<typeof buildStoredScriptBundle> {
+  const bundle = buildStoredScriptBundle(brandId, topicPlaceholder, format);
+  if (isTechBrand(brandId) && format !== 'legacy') return bundle;
+  return {
+    ...bundle,
+    template: toGenericEpisodeKeys(bundle.template),
+    fieldGuide: bundle.fieldGuide.map((row) => ({
+      ...row,
+      field: toGenericEpisodeText(row.field),
+      note: toGenericEpisodeText(row.note)
+    })),
+    llmPrompt: toGenericEpisodeText(bundle.llmPrompt),
+    notes: bundle.notes.map(toGenericEpisodeText)
+  };
+}

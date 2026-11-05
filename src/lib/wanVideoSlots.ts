@@ -32,7 +32,7 @@ export type WanEpisodeLike = {
     camera: string;
     renderMode: 'STILL' | 'AI_VIDEO' | string;
   }>;
-  ending?: { payoffHi?: string };
+  ending?: { payoffHi?: string; payoffSpokenSeparately?: boolean };
 };
 
 function hookText(episode: WanEpisodeLike): string {
@@ -88,7 +88,7 @@ export function listWanVideoSlots(episode: WanEpisodeLike): WanVideoSlot[] {
     cursor = scene.startSecond + scene.durationSeconds;
   }
 
-  if (episode.ending?.payoffHi?.trim()) {
+  if (episode.ending?.payoffSpokenSeparately !== false && episode.ending?.payoffHi?.trim()) {
     const last = episode.scenes.at(-1);
     slots.push({
       id: -1,

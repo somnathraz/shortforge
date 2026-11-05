@@ -13,6 +13,12 @@ import {
   type VoiceDirection
 } from '../schema/voiceDirection.js';
 
+/** True when ending.payoffHi should be spoken and given its own picture card. */
+export function payoffIsSpoken(episode: Pick<Episode, 'ending'>): boolean {
+  if (episode.ending.payoffSpokenSeparately === false) return false;
+  return Boolean(episode.ending.payoffHi?.trim());
+}
+
 /** Packaging/title are never spoken — only spokenHook + scene narration + ending payoff. */
 export function resolveSpokenHook(episode: Episode): string {
   return spokenHookText(episode.spokenHook);
@@ -199,7 +205,7 @@ export function expandEpisodeVoicePlan(episode: Episode): VoicePlanItem[] {
     });
   }
 
-  const ending = episode.ending.payoffHi.trim();
+  const ending = payoffIsSpoken(episode) ? episode.ending.payoffHi.trim() : '';
   if (ending) {
     const profile = cast.NARRATOR!;
     items.push({
@@ -231,7 +237,7 @@ export function buildHindiTtsScript(episode: Episode): string {
   const parts = [
     resolveSpokenHook(episode),
     ...episode.scenes.map((scene) => resolveSceneSpokenText(scene)),
-    episode.ending.payoffHi.trim()
+    payoffIsSpoken(episode) ? episode.ending.payoffHi.trim() : ''
   ].filter(Boolean);
   if (!parts.length) throw new Error('Episode has no spoken narration text');
   return parts.join(' ');
@@ -245,7 +251,7 @@ export function buildElevenLabsTtsScript(episode: Episode): string {
   const parts = [
     resolveSpokenHook(episode),
     ...episode.scenes.map((scene) => resolveSceneElevenLabsText(scene)),
-    episode.ending.payoffHi.trim()
+    payoffIsSpoken(episode) ? episode.ending.payoffHi.trim() : ''
   ].filter(Boolean);
   if (!parts.length) throw new Error('Episode has no spoken narration text');
   return parts.join(' ');
@@ -297,7 +303,7 @@ export function narrationSegments(episode: Episode): NarrationSegment[] {
     cursor = scene.startSecond + scene.durationSeconds;
   }
 
-  const ending = episode.ending.payoffHi.trim();
+  const ending = payoffIsSpoken(episode) ? episode.ending.payoffHi.trim() : '';
   if (ending) {
     const endingDur = Math.min(5, Math.max(2.5, ending.length / 18));
     segments.push({

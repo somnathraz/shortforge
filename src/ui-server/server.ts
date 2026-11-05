@@ -22,6 +22,7 @@ import {
   runWithBrandAsync,
   type BrandId
 } from '../lib/brands.js';
+import { createPipeline } from '../lib/pipelineScaffold.js';
 import { listElevenLabsVoiceOptions } from '../lib/elevenlabsVoices.js';
 import { listSarvamVoiceOptions } from '../lib/sarvamVoices.js';
 import { assertEpisodeNotPublished, fileExists } from './assets.js';
@@ -451,6 +452,29 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
     return;
   }
 
+  if (method === 'POST' && pathname === '/api/pipelines') {
+    const body = z
+      .object({
+        id: z.string().min(2).max(41),
+        kind: z.enum(['story', 'tech']),
+        label: z.string().max(60).optional(),
+        language: z.enum(['hi', 'en']).optional(),
+        cta: z.string().max(200).optional()
+      })
+      .safeParse(await readJsonBody(req));
+    if (!body.success) {
+      sendJson(res, 400, { error: body.error.issues.map((issue) => issue.message).join('; ') });
+      return;
+    }
+    try {
+      const created = await createPipeline(body.data);
+      sendJson(res, 201, { pipeline: brandPublicView(created) });
+    } catch (error) {
+      sendJson(res, 400, { error: error instanceof Error ? error.message : String(error) });
+    }
+    return;
+  }
+
   if (method === 'GET' && pathname === '/api/pipelines') {
     sendJson(res, 200, {
       pipelines: listBrands().map((brand) => brandPublicView(brand)),
@@ -870,7 +894,7 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
     }
     try {
       if (pathname === '/api/tech-reels/template' && method === 'GET') {
-        sendJson(res, 200, buildTechReelScriptBundle(url.searchParams.get('topic') || '{{TOPIC}}'));
+        sendJson(res, 200, buildTechReelScriptBundle(url.searchParams.get('topic') || '{{TOPIC}}', currentBrandId()));
         return;
       }
       if (pathname === '/api/tech-reels/scenes' && method === 'GET') {

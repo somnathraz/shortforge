@@ -19,7 +19,7 @@ import {
 import { applyHeritageFrameOverlay } from '../visual/heritageFrameOverlay.js';
 import { resolveEpisodeVisualStyle } from '../visual/resolveVisualStyle.js';
 import { isTechEditorialEpisode } from '../visual/tech-editorial-style.js';
-import { resolveSpokenHook } from '../lib/ttsScript.js';
+import { payoffIsSpoken, resolveSpokenHook } from '../lib/ttsScript.js';
 import { loadReviewSelected } from '../lib/selectedAssets.js';
 import { requiredImageIds } from '../lib/sceneVisualPlan.js';
 const args = process.argv.slice(2);
@@ -135,7 +135,7 @@ async function main(): Promise<void> {
   const imageIds = requiredImageIds(
     episode.scenes,
     Boolean(resolveSpokenHook(episode)),
-    Boolean(episode.ending.payoffHi.trim()),
+    payoffIsSpoken(episode),
     selected?.sceneVisuals,
     selected?.clips,
     { hookTechVisual: episode.hookTechVisual }

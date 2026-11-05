@@ -9,7 +9,7 @@ import {
 import { resolveHeritageFrameWeight } from '../visual/epicastra-style.js';
 import { resolveEpisodeVisualStyle } from '../visual/resolveVisualStyle.js';
 import { isTechEditorialEpisode } from '../visual/tech-editorial-style.js';
-import { resolveSpokenHook } from '../lib/ttsScript.js';
+import { payoffIsSpoken, resolveSpokenHook } from '../lib/ttsScript.js';
 import { assertValidImagePrompt } from '../lib/validateImagePrompt.js';
 import { episodesDir } from './paths.js';
 import { loadReviewSelected } from '../lib/selectedAssets.js';
@@ -75,7 +75,7 @@ export async function buildImagePromptsForEpisode(file: string): Promise<ImagePr
   const ids = requiredImageIds(
     episode.scenes,
     Boolean(resolveSpokenHook(episode)),
-    Boolean(episode.ending.payoffHi.trim()),
+    payoffIsSpoken(episode),
     selected?.sceneVisuals,
     selected?.clips,
     { hookTechVisual: episode.hookTechVisual }

@@ -79,9 +79,9 @@ export function ConnectAiDialog({ open, onOpenChange }: { open: boolean; onOpenC
         <DialogHeader>
           <DialogTitle>Connect an AI to this studio</DialogTitle>
           <DialogDescription>
-            Let Claude (or any MCP-compatible AI) write scripts, edit image prompts, run production steps, check your
-            accounts and read analytics — using this same pipeline, with your approvals still required. Everything runs
-            on your computer; nothing is uploaded.
+            Let Claude, ChatGPT, or any MCP-compatible AI write scripts, edit image prompts, run production steps,
+            check your accounts and read analytics — using this same pipeline, with your approvals still required.
+            Production runs on your computer. Your selected AI service receives tool requests and results.
           </DialogDescription>
         </DialogHeader>
 
@@ -91,7 +91,7 @@ export function ConnectAiDialog({ open, onOpenChange }: { open: boolean; onOpenC
         {info ? (
           <div className="space-y-5">
             <Tabs defaultValue={info.clients[0]?.id}>
-              <TabsList>
+              <TabsList className="h-auto w-full flex-wrap justify-start">
                 {info.clients.map((client) => (
                   <TabsTrigger key={client.id} value={client.id}>
                     {client.label}
@@ -105,7 +105,7 @@ export function ConnectAiDialog({ open, onOpenChange }: { open: boolean; onOpenC
                       <li key={step}>{step}</li>
                     ))}
                   </ol>
-                  {client.kind === 'json' ? (
+                  {client.kind === 'json' || client.kind === 'toml' ? (
                     <p className="text-xs text-muted-foreground">
                       File: <code className="text-foreground">{client.location}</code>
                     </p>
@@ -201,7 +201,7 @@ export function ConnectAiBanner({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="mx-5 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3 sm:mx-7">
       <div className="min-w-0 text-sm">
-        <p className="font-medium">Work with Claude on this studio</p>
+        <p className="font-medium">Work with Claude or ChatGPT on this studio</p>
         <p className="text-muted-foreground">
           Connect an AI to write scripts, tune image prompts and run production for you.
         </p>

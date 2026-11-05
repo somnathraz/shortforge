@@ -6,7 +6,6 @@ See [`docs/brands/publish-identity-architecture.md`](../../docs/brands/publish-i
 
 Expected files (created by Desk Authorize, not by hand):
 
-- `epicastra.json`
-- `tech-instagram.json`
+- `<pipeline-id>.json` (one file per pipeline)
 
 Do not commit these files.

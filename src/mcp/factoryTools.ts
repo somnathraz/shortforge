@@ -1,7 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import {
-  BRAND_IDS,
   DEFAULT_BRAND_ID,
   brandPublicView,
   isBrandId,
@@ -9,6 +8,7 @@ import {
   runWithBrandAsync,
   type BrandId
 } from '../lib/brands.js';
+import { createPipeline } from '../lib/pipelineScaffold.js';
 import { buildScriptBundle } from '../lib/episodeScriptTemplate.js';
 import { formatImportIssues, importEpisodeJson } from '../pipeline/importEpisode.js';
 import { PUBLISH_PLATFORMS } from '../pipeline/publish.js';
@@ -22,9 +22,11 @@ import type { JobKind } from '../ui-server/types.js';
 
 const BrandSchema = z
   .string()
-  .default(DEFAULT_BRAND_ID)
-  .refine(isBrandId, { message: `Unknown pipeline. Configured: ${BRAND_IDS.join(', ')}` })
-  .describe(`Pipeline/account id from config/brands/*.json. Configured: ${BRAND_IDS.join(', ')}.`);
+  .default(() => DEFAULT_BRAND_ID)
+  .refine(isBrandId, {
+    message: 'Unknown pipeline. Call list_brands to see configured ids, or create_pipeline to add one.'
+  })
+  .describe('Pipeline/account id (call list_brands for the configured ids; defaults to the default pipeline).');
 const EpisodeFileSchema = z
   .string()
   .min(1)
@@ -73,11 +75,36 @@ export function registerFactoryTools(server: McpServer): void {
     'list_brands',
     {
       title: 'List pipelines / accounts',
-      description: 'Lists the brand pipelines (EpicAstra, Tech Instagram) with their publish targets and default language.',
+      description:
+        'Lists the configured pipelines (one per channel/account) with their engine kind, publish targets and default language. Empty on a fresh install: use create_pipeline.',
       inputSchema: z.object({}),
       annotations: { readOnlyHint: true }
     },
     async () => textResult(listBrands().map((brand) => brandPublicView(brand)))
+  );
+
+  server.registerTool(
+    'create_pipeline',
+    {
+      title: 'Create a pipeline',
+      description:
+        'Creates a new pipeline (a channel with its own episodes and publish accounts). kind "story" = narrated cinematic Shorts; "tech" = Remotion tech reels. Writes config/brands/<id>.json; connect accounts afterwards in the Desk.',
+      inputSchema: z.object({
+        id: z.string().regex(/^[a-z][a-z0-9-]{1,40}$/, 'lowercase letters, digits, dashes; start with a letter'),
+        kind: z.enum(['story', 'tech']),
+        label: z.string().max(60).optional(),
+        language: z.enum(['hi', 'en']).optional(),
+        cta: z.string().max(200).optional()
+      }),
+      annotations: { readOnlyHint: false, destructiveHint: false }
+    },
+    async (input) => {
+      try {
+        return textResult({ created: brandPublicView(await createPipeline(input)) });
+      } catch (error) {
+        return errorResult(error);
+      }
+    }
   );
 
   server.registerTool(

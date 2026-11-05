@@ -41,7 +41,7 @@ npm install
 npm run mcp
 ```
 
-The server writes MCP protocol messages to stdout and diagnostics to stderr. The repo ships a project-level `.mcp.json`, so Claude Code (and other clients that read it) offer to connect when you open this folder. For other apps, the Desk's **Connect AI** button shows the exact config for your machine and can test it. The equivalent config, run from the project directory:
+The server writes MCP protocol messages to stdout and diagnostics to stderr. The repo ships a project-level `.mcp.json`, so Claude Code (and other clients that read it) offer to connect when you open this folder. Codex desktop, CLI and the Codex IDE extension use `.codex/config.toml` once the project is trusted. Regular ChatGPT uses a separate plugin connection (see below). For other apps, the Desk's **Connect AI** button shows the exact config for your machine and can test it. The equivalent config, run from the project directory:
 
 ```json
 {
@@ -56,3 +56,32 @@ The server writes MCP protocol messages to stdout and diagnostics to stderr. The
 ```
 
 Keep `.env` local. The provider-status tool returns booleans and model names only, never credentials.
+
+## ChatGPT web
+
+ChatGPT web does not read Codex's TOML configuration. The ChatGPT desktop build using the Codex runtime supports the local Codex configuration. This server uses local stdio;
+it cannot be added by pasting a localhost URL into ChatGPT.
+
+Use [Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)
+with this server's stdio launcher. The Desk's **Connect AI → ChatGPT web** tab generates
+the command for this machine. Install the official `tunnel-client`, create a tunnel
+associated with the target ChatGPT workspace, and configure `CONTROL_PLANE_API_KEY`
+securely in the terminal. Keep the client running while connecting and using tools.
+In [ChatGPT Plugins](https://chatgpt.com/plugins), add a custom MCP server, choose
+**Connection: Tunnel**, select that tunnel, configure authentication, then create
+and install the plugin. Select it with `@` in a chat and ask it to list pipelines.
+Workspace permissions determine whether custom MCP connections are available.
+
+Tool requests and results are shared with the selected AI service. Provider keys
+stay in the local `.env`; the server never returns their values.
+
+## Diagnose local connections
+
+The Desk's **Test MCP server** checks initialization and tool discovery. A passing
+check verifies the server, not registration in a particular AI app. Claude Desktop
+needs an entry in its own `claude_desktop_config.json` and a restart; it does not
+read this project's `.mcp.json`. Codex has its own TOML configuration. An LLM API
+key is not required for discovery, listing pipelines or importing an AI-authored
+script; provider-backed generation steps require their corresponding keys.
+
+For Claude Desktop, preview an absolute launcher with `node scripts/mcp/configure-claude-desktop.mjs`; add it with `--apply`. The installer preserves other settings, backs up an existing config and verifies the saved entry. Restart Claude after applying.

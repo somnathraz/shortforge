@@ -1,8 +1,8 @@
 {
   "id": "tech-instagram",
   "kind": "tech",
-  "label": "Tech Reels",
-  "blurb": "DSA, system design, architecture, app building — one concept per Reel",
+  "label": "Fixture Tech",
+  "blurb": "Test fixture pipeline (tech engine)",
   "studioSubtitle": "Tech education studio",
   "episodesDir": "data/episodes-tech",
   "universeFile": "data/universes/tech-instagram.json",
@@ -15,30 +15,22 @@
     "instagram",
     "facebook"
   ],
-  "s3Prefix": "epicastra/tech/",
-  "ctaDefault": "Follow for daily tech shorts — save this for interview prep.",
+  "s3Prefix": "fixture-tech/",
+  "ctaDefault": "Follow for more.",
   "emptyListCopy": "No tech Reels yet. Create your first one-concept episode.",
   "newEpisodeLabel": "Create a new Reel",
   "theme": "tech",
-  "youtubePlaylistTitle": "DSA 90 Days",
   "commentDm": {
     "enabled": true,
     "keywords": [
-      "repo",
       "code",
-      "link",
-      "github",
-      "source"
+      "link"
     ],
-    "message": "Hey {name}! Thanks for watching 🙌 Here are the links:",
+    "message": "Hey {name}! Here are the links:",
     "links": [
       {
-        "label": "Website",
-        "url": "https://somanathkhadanga.com/labs/traps"
-      },
-      {
-        "label": "GitHub repo",
-        "url": "https://github.com/somnathraz/interview-traps"
+        "label": "Docs",
+        "url": "https://example.com/docs"
       }
     ]
   }
