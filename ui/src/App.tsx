@@ -33,6 +33,7 @@ import {
   getInstagramMediaHosting,
   listEpisodes,
   listTechReels,
+  listTechSceneTemplates,
   getSfxStatus,
   uploadCustomSfx,
   listTtsVoices,
@@ -737,7 +738,8 @@ export default function App() {
       setTechReelIds(new Set());
       return;
     }
-    void listTechReels()
+    void listTechSceneTemplates()
+      .then(() => listTechReels())
       .then(({ reels }) => setTechReelIds(new Set(reels.map((r) => r.id))))
       .catch(() => setTechReelIds(new Set()));
   }, [pipelineId, selectedFile]);
@@ -3670,6 +3672,8 @@ export default function App() {
 
           {phase === 'images' && detail && !creating && isTech && (
             <TechScenesPanel
+              key={detail.episode.id}
+              reelId={linkedTechReelId || undefined}
               episodeTitle={detail.episode.titleEn || detail.episode.titleHi || detail.episode.id}
               continueBusy={saving}
               onContinue={async () => {

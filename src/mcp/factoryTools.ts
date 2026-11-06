@@ -19,6 +19,11 @@ import { buildImagePromptsForEpisode, saveVisualPrompts } from '../ui-server/ima
 import { assertJobAllowed } from '../ui-server/jobGate.js';
 import { runJob } from '../ui-server/jobs.js';
 import type { JobKind } from '../ui-server/types.js';
+import { readFile } from 'node:fs/promises';
+import { CUSTOM_LAYERS_TEMPLATE_ID, LAYER_CANVAS, LayersSchema } from '../schema/customLayers.js';
+import { TechReelAuthoringSchema } from '../schema/techReel.js';
+import { renderBeatStill } from '../remotion/renderBeatStill.js';
+import { listTechReels, loadTechReel, saveTechReel } from '../ui-server/techReels.js';
 
 const BrandSchema = z
   .string()
@@ -101,6 +106,104 @@ export function registerFactoryTools(server: McpServer): void {
     async (input) => {
       try {
         return textResult({ created: brandPublicView(await createPipeline(input)) });
+      } catch (error) {
+        return errorResult(error);
+      }
+    }
+  );
+
+  server.registerTool(
+    'list_tech_reels',
+    {
+      title: 'List tech reel storyboards',
+      description: 'Lists Tech Reels storyboards (data/tech-reels) with beat counts and whether a render exists.',
+      inputSchema: z.object({}),
+      annotations: { readOnlyHint: true }
+    },
+    async () => {
+      try {
+        const reels = await listTechReels();
+        return textResult(reels.map((r) => ({ id: r.id, title: r.title, style: r.style, beats: r.beats, rendered: Boolean(r.output) })));
+      } catch (error) {
+        return errorResult(error);
+      }
+    }
+  );
+
+  server.registerTool(
+    'get_scene_layers',
+    {
+      title: 'Get a beat\'s animation layers',
+      description:
+        'Returns each beat of a tech reel (id, narration, duration, template) and any custom animation layers. Use before set_scene_layers.',
+      inputSchema: z.object({ reelId: z.string().min(1).max(80), beatId: z.string().max(80).optional() }),
+      annotations: { readOnlyHint: true }
+    },
+    async ({ reelId, beatId }) => {
+      try {
+        const reel = await loadTechReel(reelId);
+        const beats = reel.beats
+          .filter((beat) => !beatId || beat.id === beatId)
+          .map((beat) => ({
+            id: beat.id,
+            headline: beat.headline,
+            narration: beat.narration,
+            durationSeconds: beat.durationSeconds,
+            template: beat.template ?? null,
+            layers: beat.layers ?? null
+          }));
+        if (beatId && !beats.length) throw new Error(`No beat "${beatId}" in ${reelId}`);
+        return textResult({ reelId, canvas: LAYER_CANVAS, beats });
+      } catch (error) {
+        return errorResult(error);
+      }
+    }
+  );
+
+  server.registerTool(
+    'set_scene_layers',
+    {
+      title: 'Design a beat\'s animation (custom layers)',
+      description:
+        `Sets free-form animation layers on one beat of a tech reel and switches that beat to template "${CUSTOM_LAYERS_TEMPLATE_ID}". ` +
+        `Canvas is ${LAYER_CANVAS.width}x${LAYER_CANVAS.height}; times are seconds from the beat start. Layer types: text, box, circle, arrow, code, counter, bar. ` +
+        'Each layer has x,y, from/to (seconds), enter (none|fade|rise|pop|draw|type), enterSeconds, easing, color and optional keys[] ({at,x,y,scale,opacity,rotate}) to move things. ' +
+        'Declarative only: no code runs. dryRun (default true) validates without saving; set preview=true to get a PNG still of the beat at previewAtSeconds. ' +
+        'Note: a reel that uses any template must have a template on every beat.',
+      inputSchema: z.object({
+        reelId: z.string().min(1).max(80),
+        beatId: z.string().min(1).max(80),
+        layers: z.array(z.record(z.string(), z.unknown())).min(1).max(40),
+        dryRun: z.boolean().default(true),
+        preview: z.boolean().default(false),
+        previewAtSeconds: z.number().min(0).max(30).optional()
+      }),
+      annotations: { readOnlyHint: false, destructiveHint: false }
+    },
+    async ({ reelId, beatId, layers, dryRun, preview, previewAtSeconds }) => {
+      try {
+        const current = await loadTechReel(reelId);
+        const parsedLayers = LayersSchema.parse(layers);
+        const next = {
+          ...current,
+          beats: current.beats.map((beat) =>
+            beat.id === beatId ? { ...beat, template: CUSTOM_LAYERS_TEMPLATE_ID, layers: parsedLayers } : beat
+          )
+        };
+        if (!current.beats.some((beat) => beat.id === beatId)) throw new Error(`No beat "${beatId}" in ${reelId}`);
+        const valid = TechReelAuthoringSchema.parse(next);
+        if (!dryRun) await saveTechReel(reelId, valid);
+        const summary = { reelId, beatId, layers: parsedLayers.length, saved: !dryRun };
+        if (!preview) return textResult(summary);
+        const beat = valid.beats.find((b) => b.id === beatId)!;
+        const still = await renderBeatStill({ reel: valid, beatId, atSeconds: previewAtSeconds ?? Math.max(0, beat.durationSeconds - 0.5) });
+        const data = (await readFile(still.absolutePath)).toString('base64');
+        return {
+          content: [
+            { type: 'text' as const, text: JSON.stringify({ ...summary, previewFile: still.absolutePath, frame: still.frame }, null, 2) },
+            { type: 'image' as const, data, mimeType: 'image/png' }
+          ]
+        };
       } catch (error) {
         return errorResult(error);
       }

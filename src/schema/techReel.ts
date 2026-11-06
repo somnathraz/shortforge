@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { TECH_REEL_THEME, TECH_REEL_PALETTE } from '../visual/techReelTheme.js';
 import { TECH_REEL_ELEMENT_KINDS } from '../visual/techReelElements.js';
 import { isKnownTechReelTemplate } from '../visual/techReelTemplates.js';
+import { CUSTOM_LAYERS_TEMPLATE_ID, LayersSchema, layerIssues } from './customLayers.js';
 import { phraseMatches, phraseTokens } from '../remotion/phraseTokens.js';
 import { TECH_DEFAULT_VOICE_PROFILE, isTechVoiceProfileId } from '../lib/techVoiceProfile.js';
 
@@ -86,6 +87,8 @@ export const TechReelSchema = z.object({
      * Create the .tsx first (`npm run tech:template:scaffold`), then set this id.
      */
     template: z.string().regex(/^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$/).max(64).optional(),
+    /** Free-form animation for template `custom.layers`: shapes, text, code and counters with keyframes. */
+    layers: LayersSchema.optional(),
     /** Extra props for scene templates (e.g. mobility.map). */
     templateProps: z.record(z.string(), z.unknown()).optional(),
     hardware: z.object({
@@ -142,6 +145,17 @@ export const TechReelSchema = z.object({
         path: ['beats', i, 'template'],
         message: `Unknown template "${beat.template}". Create it first: npm run tech:template:scaffold -- --id ${beat.template}`
       });
+    }
+    if (beat.template === CUSTOM_LAYERS_TEMPLATE_ID && !beat.layers) {
+      ctx.addIssue({ code: 'custom', path: ['beats', i, 'layers'], message: 'custom.layers requires beat.layers' });
+    }
+    if (beat.layers && beat.template !== CUSTOM_LAYERS_TEMPLATE_ID) {
+      ctx.addIssue({ code: 'custom', path: ['beats', i, 'template'], message: `beat.layers needs template "${CUSTOM_LAYERS_TEMPLATE_ID}"` });
+    }
+    if (beat.layers) {
+      for (const issue of layerIssues(beat.layers, beat.durationSeconds)) {
+        ctx.addIssue({ code: 'custom', path: ['beats', i, 'layers', ...issue.path], message: issue.message });
+      }
     }
     if (beat.template === 'window.array' && !beat.window) {
       ctx.addIssue({ code: 'custom', path: ['beats', i, 'window'], message: 'window.array requires beat.window' });

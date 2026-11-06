@@ -190,7 +190,8 @@ export async function generateEpisode(
   generator?: EpisodeGenerator,
   provider: StoryProvider = 'ollama',
   requestedKind: RequestedStoryKind = 'canonical',
-  brandId: BrandId = currentBrandId()
+  brandId: BrandId = currentBrandId(),
+  profileBrief = ''
 ): Promise<Episode> {
   const cleanTopic = topic.trim();
   if (cleanTopic.length < 3) throw new Error('Topic must contain at least 3 characters');
@@ -253,7 +254,7 @@ If the full myth is long, write one self-contained Short slice with a natural cl
     timeline,
     hookSeconds,
     brandId
-  );
+  ) + (profileBrief ? '\nCREATOR PROFILE (creative style only; keep all schema, budget and editorial constraints):\n' + profileBrief : '');
   const generationSchema =
     effectiveKind === 'auto'
       ? EpisodeGenerationSchema

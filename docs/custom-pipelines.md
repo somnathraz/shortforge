@@ -78,3 +78,23 @@ write them, and import also accepts the older stored names, so existing files ke
 | `metadata.description`, `metadata.thumbnailText` | `...Hi` |
 
 The narration language is the pipeline's `defaultLanguage`; the `Hi` in a stored name is historical.
+
+## Custom animation per beat (Tech Reels)
+
+Besides the built-in diagram and scene templates, a beat can carry its own animation as data. Set
+`template: "custom.layers"` and describe `layers[]` on a 1080 x 720 canvas; times are seconds from the start
+of the beat. Nothing runs as code: a fixed renderer draws the layers, so Claude (or any LLM) can design one
+through MCP.
+
+Layer types: `text`, `box`, `circle`, `arrow`, `code`, `counter`, `bar`. Common fields: `x`, `y`, `from`,
+`to`, `enter` (`none|fade|rise|pop|draw|type`), `enterSeconds`, `easing`, `color`, and optional `keys`
+(`{ at, x, y, scale, opacity, rotate }`) to move a layer over time.
+
+```json
+{ "id": "db", "type": "box", "x": 930, "y": 360, "w": 220, "h": 120, "label": "DB",
+  "from": 0.8, "enter": "pop", "keys": [{ "at": 3, "x": 930 }, { "at": 4, "x": 700 }] }
+```
+
+MCP tools: `list_tech_reels`, `get_scene_layers`, and `set_scene_layers` (validates by default; pass
+`dryRun: false` to save and `preview: true` to get a PNG of the beat back). A reel that uses any template must
+give every beat a template. Layer types are defined in `src/schema/customLayers.ts`.

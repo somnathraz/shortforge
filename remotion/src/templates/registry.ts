@@ -1,7 +1,9 @@
 import type { SceneTemplateModule } from './types';
+import * as sysCounterRace from './scenes/sys.counter-race';
 import * as windowArray from './scenes/window.array';
 import * as scaleMachine from './scenes/scale.machine';
 import * as mobilityMap from './scenes/mobility.map';
+import * as customLayers from './scenes/custom.layers';
 import * as sysHotPathCounter from './scenes/sys.hot-path-counter';
 
 /**
@@ -9,6 +11,8 @@ import * as sysHotPathCounter from './scenes/sys.hot-path-counter';
  * Ids must stay in sync with src/visual/techReelTemplates.ts
  */
 export const TEMPLATE_REGISTRY: Record<string, SceneTemplateModule> = {
+  [sysCounterRace.meta.id]: sysCounterRace,
+  [customLayers.meta.id]: customLayers,
   [sysHotPathCounter.meta.id]: sysHotPathCounter,
   [windowArray.meta.id]: windowArray,
   [scaleMachine.meta.id]: scaleMachine,

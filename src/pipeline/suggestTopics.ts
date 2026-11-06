@@ -6,10 +6,11 @@ import { openRouterStructuredChat } from '../lib/openrouter.js';
 import { openAIStructuredChat } from '../lib/openai.js';
 import { geminiStructuredChat } from '../lib/gemini.js';
 import { STORY_PROVIDERS, type StoryProvider } from './generateEpisode.js';
+import { currentBrand } from '../lib/brands.js';
 
 export const TopicIdeaSchema = z.object({
   topic: z.string().min(8).max(120),
-  kind: z.enum(['CANONICAL_MYTHOLOGY', 'LESSER_KNOWN_MYTHOLOGY', 'ORIGINAL_MYTH_FICTION']),
+  kind: z.enum(['CANONICAL_MYTHOLOGY', 'LESSER_KNOWN_MYTHOLOGY', 'ORIGINAL_MYTH_FICTION', 'TECH_EDUCATION']),
   hookHi: z.string().min(8).max(160),
   whyTrendy: z.string().min(8).max(240),
   trendScore: z.number().min(1).max(10),
@@ -39,7 +40,7 @@ type ChannelUniverse = {
 async function loadChannel(): Promise<ChannelUniverse> {
   try {
     return JSON.parse(
-      await readFile(path.resolve('data/universes/channel.json'), 'utf8')
+      await readFile(path.resolve(currentBrand().universeFile), 'utf8')
     ) as ChannelUniverse;
   } catch {
     return {};
@@ -56,6 +57,7 @@ export async function suggestTrendyTopics(options: {
   provider?: StoryProvider;
   count?: number;
   focus?: string;
+  profileBrief?: string;
 }): Promise<TopicBatch> {
   const provider = options.provider || (process.env.STORY_PROVIDER as StoryProvider) || 'openrouter';
   if (!STORY_PROVIDERS.includes(provider)) {
@@ -70,7 +72,14 @@ export async function suggestTrendyTopics(options: {
     originalFictionPercent: 15
   };
 
-  const system = `
+  const brand = currentBrand();
+  const system = brand.kind === 'tech' ? `
+You are the topic scout for ${brand.label}: ${brand.blurb}.
+Suggest one-concept tech education Shorts, 30–45 seconds each, based on the user's focus.
+Use English topics and English hooks in hookHi. Do not imply live trend research.
+Use TECH_EDUCATION as the kind marker.
+Avoid invented technical facts and copying published scripts. Return the requested structured JSON.
+` : `
 You are the topic scout for a Hindi YouTube Shorts channel about Indian mythology.
 
 Channel: ${channel.channelPositioning || 'Cinematic Indian mythology Shorts'}
@@ -113,7 +122,7 @@ Return structured JSON only.
     console.warn(`Provider ${provider} is weak for topic scouting; using OpenRouter instead.`);
   }
 
-  const batch = TopicBatchSchema.parse(await chat(TopicBatchSchema, system, user));
+  const batch = TopicBatchSchema.parse(await chat(TopicBatchSchema, system + (options.profileBrief ? '\nCreator profile creative guidelines:\n' + options.profileBrief : ''), user));
   return {
     ...batch,
     asOf,

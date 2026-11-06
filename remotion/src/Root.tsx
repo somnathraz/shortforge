@@ -10,6 +10,7 @@ import { loadBigOEpisodeProps, totalDurationInFrames } from './lib/loadBigOProps
 import { TECH } from './theme';
 import { TechReel } from './compositions/TechReel';
 import { previewReel, reelFrames, REEL_FPS, type TechReelProps } from '../../src/remotion/techReelModel';
+import counterRace from '../../data/tech-reels/rate-limiter-day2-counter-race-v2.json';
 
 
 const defaults = loadBigOEpisodeProps();
@@ -27,6 +28,16 @@ const chromeDefaults: EpicAstraChromeProps = {
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="RateLimiterDay2"
+        component={TechReel}
+        durationInFrames={2100}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ reel: counterRace as TechReelData, captions: [] } as TechReelProps}
+        calculateMetadata={({ props }: { props: TechReelProps }) => ({ durationInFrames: reelFrames(props.reel) })}
+      />
       <Composition
         id="TechReel"
         component={TechReel}

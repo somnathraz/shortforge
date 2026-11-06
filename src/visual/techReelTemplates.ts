@@ -15,6 +15,15 @@ export type TechReelTemplateMeta = {
 
 /** Keep in sync with remotion/src/templates/registry.ts and data/tech-templates/catalog.json */
 export const TECH_REEL_TEMPLATES: readonly TechReelTemplateMeta[] = [
+  { id: 'sys.counter-race', title: 'Rate limiter counter race', pack: 'sys', llm: 'stage: hook, sequential, race, result, gap, atomic, rule. Fifty requests and one shared Redis counter.', requires: ['none'], status: 'ready' },
+  {
+    id: 'custom.layers',
+    title: "Custom animation layers",
+    pack: 'custom',
+    llm: "Design a one-off animation for this beat with beat.layers: text, box, circle, arrow, code, counter and bar layers with timed keyframes on a 1080x720 canvas (times in seconds from beat start). No code needed.",
+    requires: ["none"] as Array<'window' | 'hardware' | 'nodes' | 'none'>,
+    status: 'ready' as const
+  },
   {
     id: 'mobility.map',
     title: "City map matching (draft)",

@@ -143,9 +143,9 @@ export const TemplateShell: React.FC<TechReelProps> = ({ reel, captions }) => {
         <div style={{ marginTop: 23, color: theme.muted, fontFamily: theme.mono, fontSize: 20, lineHeight: 1.6 }}>
           {beat.subhead}
         </div>
-        <div style={{ marginTop: 12, color: '#5e6272', fontFamily: theme.mono, fontSize: 14, letterSpacing: 1 }}>
+        {templateId !== 'sys.counter-race' ? <div style={{ marginTop: 12, color: '#5e6272', fontFamily: theme.mono, fontSize: 14, letterSpacing: 1 }}>
           template · {entry.meta.id}
-        </div>
+        </div> : null}
       </div>
 
       <div style={{ position: 'absolute', top: 560, left: 0, width: 1080, height: 720, overflow: 'hidden' }}>

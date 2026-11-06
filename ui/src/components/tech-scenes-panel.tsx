@@ -3,12 +3,14 @@ import { ArrowRightIcon, RefreshCwIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   formatTechSceneTsx,
+  getTechReel,
   getTechSceneTemplateSource,
   listTechSceneTemplates,
   previewTechSceneStill,
   publishTechSceneTemplate,
   scaffoldTechSceneTemplate,
-  type TechSceneTemplateMeta
+  type TechSceneTemplateMeta,
+  type TechReelDetail
 } from '@/lib/api';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -44,11 +46,13 @@ export default { meta, Scene } satisfies SceneTemplateModule;
 
 type Props = {
   episodeTitle?: string;
+  reelId?: string;
   onContinue: () => void | Promise<void>;
   continueBusy?: boolean;
 };
 
-export function TechScenesPanel({ episodeTitle, onContinue, continueBusy }: Props) {
+export function TechScenesPanel({ episodeTitle, reelId, onContinue, continueBusy }: Props) {
+  const [linkedReel, setLinkedReel] = useState<TechReelDetail | null>(null);
   const [templates, setTemplates] = useState<TechSceneTemplateMeta[]>([]);
   const [sceneId, setSceneId] = useState('window.array');
   const [sceneSource, setSceneSource] = useState('');
@@ -57,6 +61,21 @@ export function TechScenesPanel({ episodeTitle, onContinue, continueBusy }: Prop
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sceneExists, setSceneExists] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLinkedReel(null);
+    if (!reelId) return;
+    void listTechSceneTemplates().then(() => getTechReel(reelId)).then((reel) => {
+      if (cancelled) return;
+      setLinkedReel(reel);
+      const template = reel.reel.beats[0]?.template;
+      if (template) setSceneId(template);
+    }).catch((err) => {
+      if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+    });
+    return () => { cancelled = true; };
+  }, [reelId]);
 
   useEffect(() => {
     void listTechSceneTemplates()
@@ -150,11 +169,42 @@ export function TechScenesPanel({ episodeTitle, onContinue, continueBusy }: Prop
       <CardHeader>
         <CardTitle>Scenes</CardTitle>
         <CardDescription>
-          Edit Remotion scene TSX per template, check a small static still (not the animated reel), then
-          continue. Full motion stays in Motion Studio.
+          {linkedReel
+            ? 'Review the animation attached to this episode and its scene sequence.'
+            : 'Edit Remotion scene TSX per template, check a small static still, then continue.'}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        {linkedReel ? (
+          <section aria-label="Episode animation" className="grid gap-4 md:grid-cols-[minmax(180px,280px)_1fr]">
+            {linkedReel.output ? (
+              <video
+                key={linkedReel.output.url}
+                src={`${linkedReel.output.url}${linkedReel.output.url.includes('?') ? '&' : '?'}v=${encodeURIComponent(linkedReel.output.modifiedAt)}`}
+                controls
+                playsInline
+                preload="metadata"
+                aria-label={`Episode animation: ${linkedReel.reel.title}`}
+                className="aspect-[9/16] w-full rounded-md border bg-black"
+              />
+            ) : <p className="text-sm text-muted-foreground">This episode’s storyboard is ready to render.</p>}
+            <div>
+              <h3 className="font-semibold">{linkedReel.reel.title}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {linkedReel.output ? 'Rendered animation with voice and captions' : 'Episode scenes'}
+                {linkedReel.output?.stale ? ' · storyboard changed since rendering' : ''}
+              </p>
+              <ol className="mt-4 space-y-3">
+                {linkedReel.reel.beats.map((beat, index) => (
+                  <li key={beat.id} className="text-sm">
+                    <span className="text-muted-foreground">{index + 1}. </span>{beat.headline}
+                    <p className="mt-1 text-xs text-muted-foreground">{beat.subhead}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+        ) : null}
         <Alert>
           <AlertTitle>Static preview only</AlertTitle>
           <AlertDescription>

@@ -38,5 +38,15 @@
       "window"
     ],
     "status": "ready"
+  },
+  {
+    "id": "sys.counter-race",
+    "title": "Rate limiter counter race",
+    "pack": "sys",
+    "llm": "stage: hook, sequential, race, result, gap, atomic, rule.",
+    "requires": [
+      "none"
+    ],
+    "status": "ready"
   }
 ]
