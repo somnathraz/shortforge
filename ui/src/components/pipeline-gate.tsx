@@ -121,11 +121,25 @@ function NewPipelineForm({ first, onCancel }: { first: boolean; onCancel: () => 
 }
 
 export function PipelineGate() {
-  const { ready, needsGate, pipelines, defaultPipelineId, remember, setRemember, choosePipeline } =
+  const { ready, needsGate, pipelines, defaultPipelineId, remember, setRemember, choosePipeline, loadError } =
     usePipeline();
   const [creating, setCreating] = useState(false);
 
-  if (!ready || !needsGate) return null;
+  if (!ready) return null;
+
+  if (loadError) {
+    return (
+      <div className="pipeline-gate fixed inset-0 z-[100] flex items-center justify-center px-5">
+        <div className="pipeline-gate-panel w-full max-w-lg rounded-2xl border border-white/10 p-8 text-center shadow-2xl">
+          <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-white">Can't reach the Desk server</h1>
+          <p className="mt-3 text-sm text-white/55">{loadError} Check that it is running, then reload. Your pipelines and episodes are not affected.</p>
+          <Button type="button" className="mt-6" onClick={() => window.location.reload()}>Reload</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!needsGate) return null;
 
   if (pipelines.length === 0 || creating) {
     const first = pipelines.length === 0;

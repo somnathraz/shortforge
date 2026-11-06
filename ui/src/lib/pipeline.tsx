@@ -43,6 +43,8 @@ function readRemember(): boolean {
 
 type PipelineContextValue = {
   ready: boolean;
+  /** Set when the pipeline list could not be fetched (so the UI shows an error, not onboarding). */
+  loadError: string | null;
   needsGate: boolean;
   pipelines: PipelineInfo[];
   pipelineId: PipelineId;
@@ -75,6 +77,7 @@ function applyTheme(pipelineId: PipelineId, theme?: string, kind?: string) {
 
 export function PipelineProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [pipelines, setPipelines] = useState<PipelineInfo[]>([]);
   const [pipelineId, setPipelineId] = useState<PipelineId>(() => readStoredPipeline() || '');
   const [defaultPipelineId, setDefaultPipelineId] = useState<PipelineId>('');
@@ -105,6 +108,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
       } catch {
         if (!cancelled) {
           setPipelines([]);
+          setLoadError('Could not load your pipelines from the Desk server.');
         }
       } finally {
         if (!cancelled) setReady(true);
@@ -215,6 +219,7 @@ export function PipelineProvider({ children }: { children: ReactNode }) {
 
   const value: PipelineContextValue = {
     ready,
+    loadError,
     needsGate,
     pipelines,
     pipelineId,

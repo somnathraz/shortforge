@@ -12,7 +12,7 @@ import { EpisodeSchema, type Episode } from '../schema/episode.js';
 import { slugify } from '../utils/slug.js';
 import { assertUniqueEpisodeId, nextUniqueEpisodeId, resolveEpisodeId } from '../lib/episodeIdentity.js';
 import { brandEpisodesDir, currentBrandId, type BrandId } from '../lib/brands.js';
-import { applyGenericEpisodeKeys } from '../lib/episodeAliases.js';
+import { applyGenericEpisodeKeys, genericKeyName, toGenericEpisodeText } from '../lib/episodeAliases.js';
 import { normalizeDialogueEpisodeForProduction } from '../lib/dialogueEpisode.js';
 
 export type ImportEpisodeResult = {
@@ -33,8 +33,8 @@ export type ValidationIssue = {
 export function formatImportIssues(error: unknown): ValidationIssue[] {
   if (error instanceof ZodError) {
     return error.issues.map((issue) => ({
-      path: issue.path.join('.') || 'root',
-      message: issue.message
+      path: issue.path.map((part) => (typeof part === 'string' ? genericKeyName(part) : part)).join('.') || 'root',
+      message: toGenericEpisodeText(issue.message)
     }));
   }
   if (error instanceof Error) {

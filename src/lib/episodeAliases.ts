@@ -54,20 +54,26 @@ export function applyGenericEpisodeKeys(raw: unknown): unknown {
     ['characters', 'featuredLords'],
     ['hookAppearingCharacters', 'hookAppearingLords']
   ]);
-  out.featuredLords = mapArray(out.featuredLords, (c) =>
-    rename(c, [
-      ['name', 'nameEn'],
-      ['nameLocal', 'nameHi']
-    ])
-  );
-  out.scenes = mapArray(out.scenes, (scene) => {
-    const s = rename(scene, [
-      ['narration', 'narrationHi'],
-      ['appearingCharacters', 'appearingLords']
-    ]);
-    s.voiceSegments = mapArray(s.voiceSegments, (seg) => rename(seg, [['text', 'textHi']]));
-    return s;
-  });
+  if (Array.isArray(out.featuredLords)) {
+    out.featuredLords = mapArray(out.featuredLords, (c) =>
+      rename(c, [
+        ['name', 'nameEn'],
+        ['nameLocal', 'nameHi']
+      ])
+    );
+  }
+  if (Array.isArray(out.scenes)) {
+    out.scenes = mapArray(out.scenes, (scene) => {
+      const s = rename(scene, [
+        ['narration', 'narrationHi'],
+        ['appearingCharacters', 'appearingLords']
+      ]);
+      if (Array.isArray(s.voiceSegments)) {
+        s.voiceSegments = mapArray(s.voiceSegments, (seg) => rename(seg, [['text', 'textHi']]));
+      }
+      return s;
+    });
+  }
   if (isObj(out.spokenHook)) out.spokenHook = rename(out.spokenHook, [['text', 'textHi']]);
   if (isObj(out.ending)) {
     out.ending = rename(out.ending, [
@@ -82,7 +88,6 @@ export function applyGenericEpisodeKeys(raw: unknown): unknown {
       ['thumbnailText', 'thumbnailTextHi']
     ]);
   }
-  for (const key of Object.keys(out)) if (out[key] === undefined) delete out[key];
   return out;
 }
 
@@ -115,6 +120,11 @@ const STORED_TO_GENERIC: Record<string, string> = {
   descriptionHi: 'description',
   thumbnailTextHi: 'thumbnailText'
 };
+
+/** Generic name for a stored key (identity for keys that are already generic or unrelated). */
+export function genericKeyName(key: string): string {
+  return STORED_TO_GENERIC[key] ?? key;
+}
 
 /** Same renaming inside prose (LLM brief, field guide, notes). Longest names first. */
 export function toGenericEpisodeText(text: string): string {

@@ -36,3 +36,25 @@ test('story script template validates through the alias layer', () => {
   assert.ok(toGenericEpisodeText('featuredLords.nameEn').includes('characters.name'));
   EpisodeSchema.parse(applyGenericEpisodeKeys({ ...bundle.template }));
 });
+
+test('aliasing adds no undefined keys and leaves stored episodes structurally identical', () => {
+  const stored = { titleHi: 't', scenes: [{ narrationHi: 'n' }], ending: { payoffHi: 'p' } };
+  const out = applyGenericEpisodeKeys(stored) as any;
+  assert.deepEqual(out, stored);
+  assert.ok(!('featuredLords' in out));
+  assert.ok(!('voiceSegments' in out.scenes[0]));
+});
+
+test('import errors name generic fields', async () => {
+  const { formatImportIssues } = await import('../src/pipeline/importEpisode.js');
+  const bad = { ...(buildScriptBundle('epicastra').template as any) };
+  bad.scenes = [{ ...bad.scenes[0], narration: '' }, ...bad.scenes.slice(1)];
+  try {
+    EpisodeSchema.parse(applyGenericEpisodeKeys(bad));
+    assert.fail('expected a validation error');
+  } catch (error) {
+    const paths = formatImportIssues(error).map((i) => i.path).join(' ');
+    assert.match(paths, /scenes\.0\.narration\b/);
+    assert.doesNotMatch(paths, /narrationHi/);
+  }
+});
